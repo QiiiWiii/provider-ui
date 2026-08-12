@@ -1,4 +1,7 @@
-import { requestAuthenticatedData } from '@/features/auth/authenticated-request'
+import {
+  requestAuthenticatedData,
+  requestAuthenticatedEmpty,
+} from '@/features/auth/authenticated-request'
 import {
   decodeCreatedRegistrationCode,
   decodeManagedUser,
@@ -10,6 +13,7 @@ import type {
   ManagedUser,
   ResetUserPasswordInput,
   UpdateUserEnabledInput,
+  UpdateUserRoleInput,
 } from '@/features/users/user-types'
 
 const jsonHeaders = {
@@ -55,6 +59,20 @@ export function updateUserEnabled(
   )
 }
 
+export function updateUserRole(
+  input: UpdateUserRoleInput,
+): Promise<ManagedUser> {
+  return requestAuthenticatedData(
+    `${userEndpoint(input.userId)}/role`,
+    decodeManagedUser,
+    {
+      method: 'PUT',
+      headers: jsonHeaders,
+      body: JSON.stringify({ role: input.role }),
+    },
+  )
+}
+
 export function resetUserPassword(
   input: ResetUserPasswordInput,
 ): Promise<ManagedUser> {
@@ -69,6 +87,12 @@ export function resetUserPassword(
       }),
     },
   )
+}
+
+export function deleteUser(userId: string): Promise<void> {
+  return requestAuthenticatedEmpty(userEndpoint(userId), {
+    method: 'DELETE',
+  })
 }
 
 function userEndpoint(userId: string): string {
