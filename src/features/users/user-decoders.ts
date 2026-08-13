@@ -1,6 +1,6 @@
 import { authUserRoles } from '@/features/auth/auth-decoders'
 import type {
-  CreatedRegistrationCode,
+  CreatedInvitation,
   ManagedUser,
 } from '@/features/users/user-types'
 import {
@@ -18,16 +18,17 @@ export function decodeManagedUsers(value: unknown): ManagedUser[] {
   )
 }
 
-export function decodeCreatedRegistrationCode(
+export function decodeCreatedInvitation(
   value: unknown,
-): CreatedRegistrationCode {
-  const record = requireRecord(value, 'registration code')
+): CreatedInvitation {
+  const record = requireRecord(value, 'invitation')
 
   return {
-    code: requireNonEmptyString(record.code, 'registration code'),
+    token: requireNonEmptyString(record.token, 'invitation token'),
+    role: requireEnum(record.role, authUserRoles, 'invitation role'),
     expiresAt: requireTimestamp(
       record.expires_at,
-      'registration code expiration',
+      'invitation expiration',
     ),
   }
 }

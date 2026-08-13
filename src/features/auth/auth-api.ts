@@ -56,7 +56,7 @@ export async function register(
       body: JSON.stringify({
         username: credentials.username,
         password: credentials.password,
-        invitation_code: credentials.invitationCode,
+        invitation_token: credentials.invitationToken,
       }),
     },
     sameOriginFetch,

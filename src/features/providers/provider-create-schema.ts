@@ -24,6 +24,7 @@ export const compatibleProviderSchema = providerBaseSchema.extend({
     .min(1, 'Base URL is required.')
     .refine(isHttpUrl, 'Enter an absolute HTTP or HTTPS URL with a host.'),
   apiKey: z.string().trim().min(1, 'API Key is required.'),
+  upstreamProtocol: z.enum(['chat_completions', 'responses']),
 })
 
 export const credentialJsonImportSchema = providerBaseSchema.extend({

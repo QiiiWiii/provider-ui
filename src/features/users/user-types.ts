@@ -9,14 +9,14 @@ export type ManagedUser = {
   updatedAt: number
 }
 
-export type CreatedRegistrationCode = {
-  code: string
+export type CreatedInvitation = {
+  token: string
+  role: AuthUserRole
   expiresAt: number
 }
 
-export type CreateUserInput = {
-  username: string
-  password: string
+export type CreateInvitationInput = {
+  role: AuthUserRole
 }
 
 export type UpdateUserEnabledInput = {

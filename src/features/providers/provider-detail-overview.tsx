@@ -39,10 +39,17 @@ export function ProviderOverview({
         <CardTitle>Overview</CardTitle>
         <CardDescription>Connection and access settings.</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+      <CardContent className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
         <DetailField label="Provider">
           {formatProviderKind(account.provider)}
         </DetailField>
+        {account.upstreamProtocol ? (
+          <DetailField label="Protocol">
+            <Badge variant="outline">
+              {formatUpstreamProtocol(account.upstreamProtocol)}
+            </Badge>
+          </DetailField>
+        ) : null}
         <DetailField label="Access">
           <span className="flex items-center gap-1.5">
             {account.visibility === 'shared' ? (
@@ -159,6 +166,12 @@ function formatCredentialKind(kind: ProviderCredentialKind): string {
   }
 
   return labels[kind]
+}
+
+function formatUpstreamProtocol(
+  protocol: NonNullable<ProviderAccount['upstreamProtocol']>,
+): string {
+  return protocol === 'chat_completions' ? 'Chat Completions' : 'Responses'
 }
 
 function formatTimestamp(timestamp: number): string {

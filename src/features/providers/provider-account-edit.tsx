@@ -42,6 +42,7 @@ const accountEditBaseSchema = z.object({
   visibility: z.enum(['private', 'shared']),
   baseUrl: z.string().trim(),
   apiKey: z.string(),
+  upstreamProtocol: z.enum(['chat_completions', 'responses']).nullable(),
   priority: z.number({ error: 'Priority must be a non-negative integer.' })
     .int('Priority must be a non-negative integer.')
     .nonnegative('Priority must be a non-negative integer.'),
@@ -56,6 +57,7 @@ function editDefaultValues(account: ProviderAccount): AccountEditValues {
     visibility: account.visibility,
     baseUrl: account.baseUrl ?? '',
     apiKey: '',
+    upstreamProtocol: account.upstreamProtocol,
     priority: account.priority,
   }
 }
@@ -210,6 +212,10 @@ export function ProviderEditDialog({ account }: { account: ProviderAccount }) {
               apiKey: isCompatibleProvider(account.provider)
                 ? values.apiKey
                 : undefined,
+              upstreamProtocol:
+                account.provider === 'openai_compatible'
+                  ? values.upstreamProtocol ?? undefined
+                  : undefined,
             }),
           )}
         >
@@ -305,6 +311,29 @@ export function ProviderEditDialog({ account }: { account: ProviderAccount }) {
                   {...form.register('apiKey')}
                 />
                 <FieldError errors={[form.formState.errors.apiKey]} />
+              </Field>
+            ) : null}
+
+            {account.provider === 'openai_compatible' ? (
+              <Field data-invalid={Boolean(form.formState.errors.upstreamProtocol)}>
+                <FieldLabel htmlFor={fieldId('upstream-protocol')}>
+                  Upstream API
+                </FieldLabel>
+                <NativeSelect
+                  id={fieldId('upstream-protocol')}
+                  className="w-full"
+                  disabled={updateAccount.isPending}
+                  aria-invalid={Boolean(form.formState.errors.upstreamProtocol)}
+                  {...form.register('upstreamProtocol')}
+                >
+                  <NativeSelectOption value="chat_completions">
+                    Chat Completions
+                  </NativeSelectOption>
+                  <NativeSelectOption value="responses">
+                    Responses
+                  </NativeSelectOption>
+                </NativeSelect>
+                <FieldError errors={[form.formState.errors.upstreamProtocol]} />
               </Field>
             ) : null}
           </FieldGroup>

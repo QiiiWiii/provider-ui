@@ -35,15 +35,15 @@ type CredentialErrors = Partial<Record<CredentialField, string>>
 
 type CredentialsFormProps = {
   mode: CredentialsMode
+  invitationToken?: string
   onSuccess: (user: AuthUser) => void
-  onModeChange?: (mode: 'login' | 'register') => void
   onSetupConflict?: () => void
 }
 
 export function CredentialsForm({
   mode,
+  invitationToken = '',
   onSuccess,
-  onModeChange,
   onSetupConflict,
 }: CredentialsFormProps) {
   const [fieldErrors, setFieldErrors] = useState<CredentialErrors>({})
@@ -69,7 +69,7 @@ export function CredentialsForm({
       passwordConfirmation: String(
         formData.get('passwordConfirmation') ?? '',
       ),
-      invitationCode: String(formData.get('invitationCode') ?? '').trim(),
+      invitationToken,
     }
     const nextErrors = validateCredentials(credentials, mode)
 
@@ -103,20 +103,6 @@ export function CredentialsForm({
           <CardTitle>
             <h1>{content.title}</h1>
           </CardTitle>
-          {mode !== 'setup' ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="shrink-0"
-              disabled={mutation.isPending}
-              onClick={() =>
-                onModeChange?.(mode === 'login' ? 'register' : 'login')
-              }
-            >
-              {mode === 'login' ? 'Register' : 'Sign in'}
-            </Button>
-          ) : null}
         </div>
         <CardDescription>{content.description}</CardDescription>
       </CardHeader>
@@ -126,6 +112,14 @@ export function CredentialsForm({
             {submissionError ? (
               <Alert variant="destructive">
                 <AlertDescription>{submissionError}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            {mode === 'register' && !invitationToken ? (
+              <Alert variant="destructive">
+                <AlertDescription>
+                  This invitation link is missing its registration token.
+                </AlertDescription>
               </Alert>
             ) : null}
 
@@ -201,38 +195,13 @@ export function CredentialsForm({
               </Field>
             ) : null}
 
-            {mode === 'register' ? (
-              <Field data-invalid={Boolean(fieldErrors.invitationCode)}>
-                <FieldLabel htmlFor="register-invitation-code">
-                  Invitation code
-                </FieldLabel>
-                <Input
-                  id="register-invitation-code"
-                  name="invitationCode"
-                  type="text"
-                  autoComplete="off"
-                  autoCapitalize="none"
-                  spellCheck={false}
-                  aria-invalid={Boolean(fieldErrors.invitationCode)}
-                  aria-describedby={
-                    fieldErrors.invitationCode
-                      ? 'register-invitation-code-error'
-                      : undefined
-                  }
-                  disabled={mutation.isPending}
-                  onChange={() => handleFieldChange('invitationCode')}
-                />
-                <FieldError id="register-invitation-code-error">
-                  {fieldErrors.invitationCode}
-                </FieldError>
-              </Field>
-            ) : null}
-
             <Button
               type="submit"
               size="lg"
               className="w-full"
-              disabled={mutation.isPending}
+              disabled={
+                mutation.isPending || (mode === 'register' && !invitationToken)
+              }
             >
               {mutation.isPending ? <Spinner /> : null}
               {mutation.isPending ? content.pendingLabel : content.submitLabel}
@@ -291,8 +260,8 @@ function validateCredentials(
     errors.password = 'Password must not exceed 1024 bytes.'
   }
 
-  if (mode === 'register' && credentials.invitationCode.length === 0) {
-    errors.invitationCode = 'Enter your invitation code.'
+  if (mode === 'register' && credentials.invitationToken.length === 0) {
+    errors.invitationToken = 'Open a valid invitation link to create an account.'
   }
 
   if (mode === 'setup') {

@@ -3,13 +3,13 @@ import {
   requestAuthenticatedEmpty,
 } from '@/features/auth/authenticated-request'
 import {
-  decodeCreatedRegistrationCode,
+  decodeCreatedInvitation,
   decodeManagedUser,
   decodeManagedUsers,
 } from '@/features/users/user-decoders'
 import type {
-  CreatedRegistrationCode,
-  CreateUserInput,
+  CreatedInvitation,
+  CreateInvitationInput,
   ManagedUser,
   ResetUserPasswordInput,
   UpdateUserEnabledInput,
@@ -24,23 +24,18 @@ export function getUsers(): Promise<ManagedUser[]> {
   return requestAuthenticatedData('/api/v1/users', decodeManagedUsers)
 }
 
-export function createRegistrationCode(): Promise<CreatedRegistrationCode> {
+export function createInvitation(
+  input: CreateInvitationInput,
+): Promise<CreatedInvitation> {
   return requestAuthenticatedData(
-    '/api/v1/registration-codes',
-    decodeCreatedRegistrationCode,
-    { method: 'POST' },
+    '/api/v1/invitations',
+    decodeCreatedInvitation,
+    {
+      method: 'POST',
+      headers: jsonHeaders,
+      body: JSON.stringify({ role: input.role }),
+    },
   )
-}
-
-export function createUser(input: CreateUserInput): Promise<ManagedUser> {
-  return requestAuthenticatedData('/api/v1/users', decodeManagedUser, {
-    method: 'POST',
-    headers: jsonHeaders,
-    body: JSON.stringify({
-      username: input.username,
-      password: input.password,
-    }),
-  })
 }
 
 export function updateUserEnabled(

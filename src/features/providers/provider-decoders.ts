@@ -270,6 +270,7 @@ function decodeProviderAccountRecord(
     groupLabel: requireNonEmptyString(record.group_label, 'provider group label'),
     priority: requireNonNegativeInteger(record.priority, 'provider priority'),
     baseUrl: decodeBaseUrl(record.config, provider),
+    upstreamProtocol: decodeUpstreamProtocol(record.config, provider),
     credentialKind: requireEnum(
       record.credential_kind,
       providerCredentialKinds,
@@ -485,6 +486,22 @@ function decodeBaseUrl(value: unknown, provider: ProviderKind): string | null {
   }
 
   return requireNonEmptyString(config.base_url, 'provider base URL')
+}
+
+function decodeUpstreamProtocol(
+  value: unknown,
+  provider: ProviderKind,
+): ProviderAccount['upstreamProtocol'] {
+  if (provider !== 'openai_compatible') {
+    return null
+  }
+
+  const config = requireRecord(value, 'provider config')
+  return requireEnum(
+    config.upstream_protocol,
+    ['chat_completions', 'responses'] as const,
+    'OpenAI-compatible upstream protocol',
+  )
 }
 
 

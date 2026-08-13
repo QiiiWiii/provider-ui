@@ -17,6 +17,7 @@ test('provider creation payloads include priority', () => {
       priority: 12,
       visibility: 'private',
       baseUrl: 'https://api.example.com/v1',
+      upstreamProtocol: 'responses',
       apiKey: 'secret',
     }),
     {
@@ -26,8 +27,31 @@ test('provider creation payloads include priority', () => {
       group_label: 'default',
       priority: 12,
       base_url: 'https://api.example.com/v1',
+      upstream_protocol: 'responses',
       api_key: 'secret',
       visibility: 'private',
+    },
+  )
+
+  assert.deepEqual(
+    createCompatibleProviderBody({
+      provider: 'anthropic_compatible',
+      label: 'Anthropic compatible',
+      groupLabel: 'default',
+      priority: 8,
+      visibility: 'shared',
+      baseUrl: 'https://api.anthropic.example.com',
+      apiKey: 'secret',
+    }),
+    {
+      method: 'direct',
+      provider: 'anthropic_compatible',
+      label: 'Anthropic compatible',
+      group_label: 'default',
+      priority: 8,
+      base_url: 'https://api.anthropic.example.com',
+      api_key: 'secret',
+      visibility: 'shared',
     },
   )
 
@@ -78,6 +102,7 @@ test('provider update payload includes priority and omits a blank API key', () =
       priority: 42,
       visibility: 'shared',
       baseUrl: 'https://api.example.com',
+      upstreamProtocol: 'chat_completions',
       apiKey: '   ',
     }),
     {
@@ -86,6 +111,7 @@ test('provider update payload includes priority and omits a blank API key', () =
       priority: 42,
       visibility: 'shared',
       base_url: 'https://api.example.com',
+      upstream_protocol: 'chat_completions',
     },
   )
 })
