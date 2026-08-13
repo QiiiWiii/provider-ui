@@ -214,12 +214,22 @@ export type CreateProviderBaseInput = {
   visibility: ProviderVisibility
 }
 
-export type CreateCompatibleProviderInput = CreateProviderBaseInput & {
-  provider: CompatibleProviderKind
+type CreateCompatibleProviderFields = CreateProviderBaseInput & {
   baseUrl: string
-  upstreamProtocol?: OpenAiUpstreamProtocol
   apiKey: string
 }
+
+export type CreateCompatibleProviderInput = CreateCompatibleProviderFields &
+  (
+    | {
+        provider: 'openai_compatible'
+        upstreamProtocol: OpenAiUpstreamProtocol
+      }
+    | {
+        provider: Exclude<CompatibleProviderKind, 'openai_compatible'>
+        upstreamProtocol?: never
+      }
+  )
 
 export type ImportOAuthProviderInput = CreateProviderBaseInput & {
   provider: OAuthProviderKind

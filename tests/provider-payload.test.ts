@@ -34,6 +34,28 @@ test('provider creation payloads include priority', () => {
   )
 
   assert.deepEqual(
+    createCompatibleProviderBody({
+      provider: 'anthropic_compatible',
+      label: 'Anthropic compatible',
+      groupLabel: 'default',
+      priority: 8,
+      visibility: 'shared',
+      baseUrl: 'https://api.anthropic.example.com',
+      apiKey: 'secret',
+    }),
+    {
+      method: 'direct',
+      provider: 'anthropic_compatible',
+      label: 'Anthropic compatible',
+      group_label: 'default',
+      priority: 8,
+      base_url: 'https://api.anthropic.example.com',
+      api_key: 'secret',
+      visibility: 'shared',
+    },
+  )
+
+  assert.deepEqual(
     importOAuthProviderBody({
       provider: 'codex',
       label: 'Codex import',

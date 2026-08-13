@@ -42,7 +42,7 @@ const providerOptions = [
   {
     value: 'openai_compatible',
     title: 'OpenAI-compatible',
-    description: 'OpenAI Chat Completions endpoint.',
+    description: 'OpenAI Chat Completions or Responses endpoint.',
     icon: BotIcon,
   },
   {

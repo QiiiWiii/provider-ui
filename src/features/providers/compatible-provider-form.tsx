@@ -67,19 +67,25 @@ export function CompatibleProviderForm({
       <form
         id="compatible-provider-form"
         onSubmit={form.handleSubmit((values) => {
-          createProvider.mutate({
-            provider,
+          const commonInput = {
             label: values.label,
             groupLabel: values.groupLabel,
             visibility: values.visibility,
             priority: values.priority,
             baseUrl: values.baseUrl,
-            upstreamProtocol:
-              provider === 'openai_compatible'
-                ? values.upstreamProtocol
-                : undefined,
             apiKey: values.apiKey,
-          })
+          }
+
+          if (provider === 'openai_compatible') {
+            createProvider.mutate({
+              ...commonInput,
+              provider,
+              upstreamProtocol: values.upstreamProtocol,
+            })
+            return
+          }
+
+          createProvider.mutate({ ...commonInput, provider })
         })}
       >
         <FieldGroup>

@@ -33,8 +33,9 @@ import { apiErrorMessage } from '@/lib/api/error'
 export function InvitationCreateDialog() {
   const [open, setOpen] = useState(false)
   const [role, setRole] = useState<AuthUserRole>('user')
-  const [copied, setCopied] = useState(false)
-  const [copyFailed, setCopyFailed] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
+    'idle',
+  )
   const invitation = useMutation({ mutationFn: createInvitation })
   const link = invitation.data
     ? `${window.location.origin}/login#invite=${encodeURIComponent(invitation.data.token)}`
@@ -45,17 +46,15 @@ export function InvitationCreateDialog() {
     setOpen(nextOpen)
     invitation.reset()
     setRole('user')
-    setCopied(false)
-    setCopyFailed(false)
+    setCopyState('idle')
   }
 
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(link)
-      setCopied(true)
-      setCopyFailed(false)
+      setCopyState('copied')
     } catch {
-      setCopyFailed(true)
+      setCopyState('failed')
     }
   }
 
@@ -97,22 +96,31 @@ export function InvitationCreateDialog() {
                 type="button"
                 variant="outline"
                 size="icon"
-                aria-label="Copy invitation link"
+                aria-label={
+                  copyState === 'copied'
+                    ? 'Invitation link copied'
+                    : 'Copy invitation link'
+                }
                 title="Copy invitation link"
                 onClick={() => void copyLink()}
               >
-                {copied ? <CheckIcon /> : <CopyIcon />}
+                {copyState === 'copied' ? <CheckIcon /> : <CopyIcon />}
               </Button>
             </div>
             <FieldDescription>
               Creates a {role === 'super_admin' ? 'super administrator' : 'user'} account.
               Expires {formatExpiry(invitation.data.expiresAt)} and can be used once.
             </FieldDescription>
-            {copyFailed ? (
-              <p className="text-sm text-destructive">
-                Clipboard access is unavailable. Select and copy the link manually.
-              </p>
-            ) : null}
+            <div role="status" aria-live="polite" aria-atomic="true">
+              {copyState === 'copied' ? (
+                <p className="text-sm">Invitation link copied.</p>
+              ) : null}
+              {copyState === 'failed' ? (
+                <p className="text-sm text-destructive">
+                  Clipboard access is unavailable. Select and copy the link manually.
+                </p>
+              ) : null}
+            </div>
           </Field>
         ) : (
           <Field>
