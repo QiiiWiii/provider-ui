@@ -10,6 +10,8 @@ export type ProviderCredentialKind = 'oauth' | 'api_key'
 
 export type ProviderAuthState = 'active' | 'reauth_required'
 
+export type OpenAiUpstreamProtocol = 'chat_completions' | 'responses'
+
 export type ProviderOAuthStatus =
   | 'pending'
   | 'provisioning'
@@ -26,6 +28,7 @@ export type ProviderAccount = {
   groupLabel: string
   priority: number
   baseUrl: string | null
+  upstreamProtocol: OpenAiUpstreamProtocol | null
   credentialKind: ProviderCredentialKind
   enabled: boolean
   authState: ProviderAuthState
@@ -214,6 +217,7 @@ export type CreateProviderBaseInput = {
 export type CreateCompatibleProviderInput = CreateProviderBaseInput & {
   provider: CompatibleProviderKind
   baseUrl: string
+  upstreamProtocol?: OpenAiUpstreamProtocol
   apiKey: string
 }
 
@@ -233,6 +237,7 @@ export type UpdateProviderAccountInput = {
   visibility: ProviderVisibility
   priority: number
   baseUrl?: string
+  upstreamProtocol?: OpenAiUpstreamProtocol
   apiKey?: string
 }
 

@@ -12,6 +12,7 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { createCompatibleProvider } from '@/features/providers/provider-api'
 import {
   ProviderBaseFields,
@@ -37,6 +38,7 @@ export function CompatibleProviderForm({
       ...defaultBaseValues,
       baseUrl: '',
       apiKey: '',
+      upstreamProtocol: 'chat_completions',
     },
   })
   const createProvider = useMutation({
@@ -72,6 +74,10 @@ export function CompatibleProviderForm({
             visibility: values.visibility,
             priority: values.priority,
             baseUrl: values.baseUrl,
+            upstreamProtocol:
+              provider === 'openai_compatible'
+                ? values.upstreamProtocol
+                : undefined,
             apiKey: values.apiKey,
           })
         })}
@@ -122,6 +128,29 @@ export function CompatibleProviderForm({
             />
             <FieldError errors={[form.formState.errors.apiKey]} />
           </Field>
+
+          {provider === 'openai_compatible' ? (
+            <Field data-invalid={Boolean(form.formState.errors.upstreamProtocol)}>
+              <FieldLabel htmlFor="provider-upstream-protocol">
+                Upstream API
+              </FieldLabel>
+              <NativeSelect
+                id="provider-upstream-protocol"
+                className="w-full"
+                disabled={createProvider.isPending}
+                aria-invalid={Boolean(form.formState.errors.upstreamProtocol)}
+                {...form.register('upstreamProtocol')}
+              >
+                <NativeSelectOption value="chat_completions">
+                  Chat Completions
+                </NativeSelectOption>
+                <NativeSelectOption value="responses">
+                  Responses
+                </NativeSelectOption>
+              </NativeSelect>
+              <FieldError errors={[form.formState.errors.upstreamProtocol]} />
+            </Field>
+          ) : null}
         </FieldGroup>
       </form>
     </ProviderFormCard>

@@ -15,6 +15,9 @@ export function createCompatibleProviderBody(
     group_label: input.groupLabel,
     priority: input.priority,
     base_url: input.baseUrl,
+    ...(input.provider === 'openai_compatible'
+      ? { upstream_protocol: input.upstreamProtocol }
+      : {}),
     api_key: input.apiKey,
     visibility: input.visibility,
   }
@@ -49,6 +52,9 @@ export function updateProviderAccountBody(input: UpdateProviderAccountInput) {
     priority: input.priority,
     visibility: input.visibility,
     base_url: input.baseUrl,
+    ...(input.upstreamProtocol
+      ? { upstream_protocol: input.upstreamProtocol }
+      : {}),
     ...(input.apiKey?.trim() ? { api_key: input.apiKey.trim() } : {}),
   }
 }

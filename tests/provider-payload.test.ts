@@ -17,6 +17,7 @@ test('provider creation payloads include priority', () => {
       priority: 12,
       visibility: 'private',
       baseUrl: 'https://api.example.com/v1',
+      upstreamProtocol: 'responses',
       apiKey: 'secret',
     }),
     {
@@ -26,6 +27,7 @@ test('provider creation payloads include priority', () => {
       group_label: 'default',
       priority: 12,
       base_url: 'https://api.example.com/v1',
+      upstream_protocol: 'responses',
       api_key: 'secret',
       visibility: 'private',
     },
@@ -78,6 +80,7 @@ test('provider update payload includes priority and omits a blank API key', () =
       priority: 42,
       visibility: 'shared',
       baseUrl: 'https://api.example.com',
+      upstreamProtocol: 'chat_completions',
       apiKey: '   ',
     }),
     {
@@ -86,6 +89,7 @@ test('provider update payload includes priority and omits a blank API key', () =
       priority: 42,
       visibility: 'shared',
       base_url: 'https://api.example.com',
+      upstream_protocol: 'chat_completions',
     },
   )
 })
