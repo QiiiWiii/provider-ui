@@ -43,6 +43,13 @@ export function ProviderOverview({
         <DetailField label="Provider">
           {formatProviderKind(account.provider)}
         </DetailField>
+        {account.upstreamProtocol ? (
+          <DetailField label="Protocol">
+            <Badge variant="outline">
+              {formatUpstreamProtocol(account.upstreamProtocol)}
+            </Badge>
+          </DetailField>
+        ) : null}
         <DetailField label="Access">
           <span className="flex items-center gap-1.5">
             {account.visibility === 'shared' ? (
@@ -159,6 +166,12 @@ function formatCredentialKind(kind: ProviderCredentialKind): string {
   }
 
   return labels[kind]
+}
+
+function formatUpstreamProtocol(
+  protocol: NonNullable<ProviderAccount['upstreamProtocol']>,
+): string {
+  return protocol === 'chat_completions' ? 'Chat Completions' : 'Responses'
 }
 
 function formatTimestamp(timestamp: number): string {
