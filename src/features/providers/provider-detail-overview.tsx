@@ -39,7 +39,7 @@ export function ProviderOverview({
         <CardTitle>Overview</CardTitle>
         <CardDescription>Connection and access settings.</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+      <CardContent className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
         <DetailField label="Provider">
           {formatProviderKind(account.provider)}
         </DetailField>
