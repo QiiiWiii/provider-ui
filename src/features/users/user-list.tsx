@@ -27,8 +27,7 @@ import {
   UserActions,
   UserEnabledControl,
 } from '@/features/users/user-actions'
-import { RegistrationCodeCreateDialog } from '@/features/users/registration-code-create'
-import { UserCreateDialog } from '@/features/users/user-create'
+import { InvitationCreateDialog } from '@/features/users/invitation-create'
 import {
   formatUserDate,
   formatUserRole,
@@ -60,10 +59,7 @@ export function UserList() {
         title="Users"
         description="Manage accounts and permissions."
         actions={
-          <div className="flex flex-wrap gap-2">
-            <RegistrationCodeCreateDialog />
-            <UserCreateDialog />
-          </div>
+          <InvitationCreateDialog />
         }
       />
 

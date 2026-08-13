@@ -21,5 +21,5 @@ export type UserCredentials = {
 }
 
 export type RegistrationCredentials = UserCredentials & {
-  invitationCode: string
+  invitationToken: string
 }

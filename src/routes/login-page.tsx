@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
 import { AuthPageLayout } from '@/components/layout/auth-page-layout'
@@ -9,14 +8,15 @@ import { establishAuthSession } from '@/features/auth/auth-session'
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const invitationToken = readInvitationToken(location.hash)
+  const mode = invitationToken ? 'register' : 'login'
 
   return (
     <AuthPageLayout>
       <CredentialsForm
         key={mode}
         mode={mode}
-        onModeChange={setMode}
+        invitationToken={invitationToken}
         onSuccess={(user) => {
           establishAuthSession(user)
           navigate(readAuthReturnTo(location.state), { replace: true })
@@ -24,4 +24,9 @@ export function LoginPage() {
       />
     </AuthPageLayout>
   )
+}
+
+function readInvitationToken(hash: string): string {
+  if (!hash.startsWith('#')) return ''
+  return new URLSearchParams(hash.slice(1)).get('invite')?.trim() ?? ''
 }
