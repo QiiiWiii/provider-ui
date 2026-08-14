@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import {
   Table,
@@ -10,10 +11,15 @@ import {
 import {
   formatUsageDateTime,
   formatUsageEndpoint,
+  formatUsageRequestStatus,
 } from '@/features/usage/usage-format'
 import { UsageLatency } from '@/features/usage/usage-latency'
 import { CostBreakdown, TokensBreakdown } from '@/features/usage/usage-breakdowns'
-import type { UsageRange, UsageRequestSummary } from '@/features/usage/usage-types'
+import type {
+  UsageRange,
+  UsageRequestStatus,
+  UsageRequestSummary,
+} from '@/features/usage/usage-types'
 
 export function UsageRequestsTable({
   items,
@@ -33,6 +39,7 @@ export function UsageRequestsTable({
           <TableRow>
             <TableHead className="pl-4">API Key</TableHead>
             <TableHead>Model</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Endpoint</TableHead>
             <TableHead>Reasoning effort</TableHead>
             <TableHead>Group</TableHead>
@@ -53,8 +60,13 @@ export function UsageRequestsTable({
                 <TableCell className="max-w-44 truncate font-mono text-xs">
                   {item.clientModel ?? '—'}
                 </TableCell>
+                <TableCell>
+                  <UsageStatusBadge status={item.status} />
+                </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground">
-                  {formatUsageEndpoint(item.endpoint)}
+                  <code className="font-mono text-xs">
+                    {formatUsageEndpoint(item.endpoint)}
+                  </code>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {item.reasoningEffort ?? '—'}
@@ -88,6 +100,25 @@ export function UsageRequestsTable({
         </TableBody>
       </Table>
     </div>
+  )
+}
+
+const statusClasses: Record<UsageRequestStatus, string> = {
+  succeeded:
+    'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400',
+  failed:
+    'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400',
+  canceled:
+    'border-border bg-muted text-muted-foreground',
+  incomplete:
+    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400',
+}
+
+function UsageStatusBadge({ status }: { status: UsageRequestStatus }) {
+  return (
+    <Badge variant="outline" className={statusClasses[status]}>
+      {formatUsageRequestStatus(status)}
+    </Badge>
   )
 }
 

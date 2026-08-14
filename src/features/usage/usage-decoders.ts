@@ -5,6 +5,7 @@ import type {
   UsageEndpoint,
   UsageOverview,
   UsageRequestSummary,
+  UsageRequestStatus,
   UsageRequestDetail,
   UsageRequests,
   UsageTokenTotals,
@@ -12,6 +13,7 @@ import type {
 import {
   optionalEnum,
   requireArray,
+  requireEnum,
   requireNonEmptyString,
   requireNonNegativeInteger,
   requirePositiveInteger,
@@ -51,6 +53,7 @@ export function decodeUsageRequests(value: unknown): UsageRequests {
   const record = requireRecord(value, 'usage requests')
   return {
     pageSize: requirePositiveInteger(record.page_size, 'usage requests page size'),
+    total: requireNonNegativeInteger(record.total, 'usage requests total'),
     requests: requireArray(record.requests, 'usage requests').map(
       (request, index) => decodeRequestSummary(request, `usage request ${index + 1}`),
     ),
@@ -164,6 +167,7 @@ function decodeRequestSummary(value: unknown, label: string): UsageRequestSummar
 
   return {
     requestId: requireNonEmptyString(record.request_id, `${label} request id`),
+    status: decodeUsageRequestStatus(record.status, `${label} status`),
     endpoint: decodeUsageEndpoint(record.endpoint, `${label} endpoint`),
     apiKeyId:
       record.api_key_id == null
@@ -197,6 +201,20 @@ function decodeRequestSummary(value: unknown, label: string): UsageRequestSummar
     tokens: decodeTokenTotals(record.tokens),
     cost: decodeCostTotals(record.cost),
   }
+}
+
+const usageRequestStatuses = [
+  'succeeded',
+  'failed',
+  'canceled',
+  'incomplete',
+] as const satisfies readonly UsageRequestStatus[]
+
+function decodeUsageRequestStatus(
+  value: unknown,
+  label: string,
+): UsageRequestStatus {
+  return requireEnum(value, usageRequestStatuses, label)
 }
 
 const usageEndpoints = [

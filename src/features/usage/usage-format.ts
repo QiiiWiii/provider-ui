@@ -1,6 +1,7 @@
 import type {
   UsageCacheTotals,
   UsageEndpoint,
+  UsageRequestStatus,
 } from './usage-types.ts'
 import { formatUnixMs } from '../../lib/datetime.ts'
 
@@ -46,13 +47,26 @@ export function formatUsageDateTime(ms: number): string {
 export function formatUsageEndpoint(endpoint: UsageEndpoint | null): string {
   switch (endpoint) {
     case 'openai_responses':
-      return 'Responses'
+      return '/v1/responses'
     case 'openai_chat_completions':
-      return 'Chat Completions'
+      return '/v1/chat/completions'
     case 'claude_messages':
-      return 'Messages'
+      return '/v1/messages'
     case null:
       return '—'
+  }
+}
+
+export function formatUsageRequestStatus(status: UsageRequestStatus): string {
+  switch (status) {
+    case 'succeeded':
+      return 'Succeeded'
+    case 'failed':
+      return 'Failed'
+    case 'canceled':
+      return 'Canceled'
+    case 'incomplete':
+      return 'Incomplete'
   }
 }
 

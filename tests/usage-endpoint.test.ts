@@ -2,12 +2,15 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import { decodeUsageRequests } from '../src/features/usage/usage-decoders.ts'
-import { formatUsageEndpoint } from '../src/features/usage/usage-format.ts'
+import {
+  formatUsageEndpoint,
+  formatUsageRequestStatus,
+} from '../src/features/usage/usage-format.ts'
 
 const endpoints = [
-  ['openai_responses', 'Responses'],
-  ['openai_chat_completions', 'Chat Completions'],
-  ['claude_messages', 'Messages'],
+  ['openai_responses', '/v1/responses'],
+  ['openai_chat_completions', '/v1/chat/completions'],
+  ['claude_messages', '/v1/messages'],
 ] as const
 
 test('usage request endpoints are decoded and formatted', () => {
@@ -37,12 +40,26 @@ test('unknown non-null endpoint violates the usage API contract', () => {
   )
 })
 
+test('usage request status is required and formatted', () => {
+  const decoded = decodeUsageRequests(usageRequestsPayload('openai_responses'))
+  assert.equal(decoded.total, 1)
+  assert.equal(decoded.requests[0]?.status, 'succeeded')
+  assert.equal(formatUsageRequestStatus('succeeded'), 'Succeeded')
+
+  const payload = usageRequestsPayload('openai_responses')
+  const request = (payload.requests as Record<string, unknown>[])[0]
+  request.status = 'unknown'
+  assert.throws(() => decodeUsageRequests(payload), /usage request 1 status is unsupported/)
+})
+
 function usageRequestsPayload(endpoint: unknown) {
   return {
     page_size: 50,
+    total: 1,
     requests: [
       {
         request_id: 'request-1',
+        status: 'succeeded',
         endpoint,
         api_key_id: null,
         api_key_label: null,
