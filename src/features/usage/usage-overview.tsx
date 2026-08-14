@@ -58,8 +58,7 @@ export function UsageOverview() {
   const apiKeys = useQuery(apiKeysQueryOptions)
   const filterOptions = useQuery(usageFilterOptionsQueryOptions(range))
 
-  // The summary is time-scoped only. Key filtering is reserved for the request list.
-  const overview = useQuery(usageOverviewQueryOptions(range))
+  const overview = useQuery(usageOverviewQueryOptions(range, listFilters))
   const requests = useQuery(
     usageRequestsQueryOptions(range, listFilters, pageCursor),
   )
@@ -133,7 +132,7 @@ export function UsageOverview() {
     <UsageSummary overview={overview.data} />
   )
   const requestContent = requests.isPending ? (
-    <UsageTableSkeleton rows={6} cols={8} />
+    <UsageTableSkeleton rows={6} cols={10} />
   ) : requests.isError ? (
     <UsageInlineError
       busy={requests.isFetching}
@@ -147,6 +146,7 @@ export function UsageOverview() {
           pageIndex={pageIndex}
           pageSize={requests.data.pageSize}
           itemCount={requestItems.length}
+          total={requests.data.total}
           canGoPrevious={canGoPrevious}
           canGoNext={canGoNext}
           isFetching={requests.isFetching}

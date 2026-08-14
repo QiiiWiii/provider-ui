@@ -19,9 +19,10 @@ import {
 
 export async function getUsageOverview(
   range: UsageRange,
+  filters?: UsageQueryFilters,
 ): Promise<UsageOverview> {
   return requestAuthenticatedData(
-    `/api/v1/usage/overview?${usageQueryParams(range).toString()}`,
+    `/api/v1/usage/overview?${usageQueryParams(range, filters).toString()}`,
     decodeUsageOverview,
   )
 }

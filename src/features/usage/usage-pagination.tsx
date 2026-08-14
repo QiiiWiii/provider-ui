@@ -7,6 +7,7 @@ export function UsageRequestsPagination({
   pageIndex,
   pageSize,
   itemCount,
+  total,
   canGoPrevious,
   canGoNext,
   isFetching,
@@ -16,6 +17,7 @@ export function UsageRequestsPagination({
   pageIndex: number
   pageSize: number
   itemCount: number
+  total: number
   canGoPrevious: boolean
   canGoNext: boolean
   isFetching: boolean
@@ -29,6 +31,8 @@ export function UsageRequestsPagination({
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-xs text-muted-foreground">
         Showing {formatUsageCount(from)}–{formatUsageCount(to)}
+        {' of '}
+        {formatUsageCount(total)}
         {' · '}
         {formatUsageCount(pageSize)} per page
       </p>

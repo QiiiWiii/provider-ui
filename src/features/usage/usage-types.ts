@@ -32,8 +32,21 @@ export type UsageFilterOptions = {
   groups: string[]
 }
 
+export type UsageEndpoint =
+  | 'openai_responses'
+  | 'openai_chat_completions'
+  | 'claude_messages'
+
+export type UsageRequestStatus =
+  | 'succeeded'
+  | 'failed'
+  | 'canceled'
+  | 'incomplete'
+
 export type UsageRequestSummary = {
   requestId: string
+  status: UsageRequestStatus
+  endpoint: UsageEndpoint | null
   apiKeyId: string | null
   apiKeyLabel: string | null
   apiKeyGroupLabel: string | null
@@ -48,6 +61,7 @@ export type UsageRequestSummary = {
 
 export type UsageRequests = {
   pageSize: number
+  total: number
   requests: UsageRequestSummary[]
   nextCursor: string | null
 }

@@ -1,5 +1,9 @@
-import type { UsageCacheTotals } from '@/features/usage/usage-types'
-import { formatUnixMs } from '@/lib/datetime'
+import type {
+  UsageCacheTotals,
+  UsageEndpoint,
+  UsageRequestStatus,
+} from './usage-types.ts'
+import { formatUnixMs } from '../../lib/datetime.ts'
 
 const countFormatter = new Intl.NumberFormat('en')
 const percentFormatter = new Intl.NumberFormat('en', {
@@ -38,6 +42,32 @@ export function formatUsageRange(fromMs: number, toMs: number): string {
 
 export function formatUsageDateTime(ms: number): string {
   return formatUnixMs(ms)
+}
+
+export function formatUsageEndpoint(endpoint: UsageEndpoint | null): string {
+  switch (endpoint) {
+    case 'openai_responses':
+      return '/v1/responses'
+    case 'openai_chat_completions':
+      return '/v1/chat/completions'
+    case 'claude_messages':
+      return '/v1/messages'
+    case null:
+      return '—'
+  }
+}
+
+export function formatUsageRequestStatus(status: UsageRequestStatus): string {
+  switch (status) {
+    case 'succeeded':
+      return 'Succeeded'
+    case 'failed':
+      return 'Failed'
+    case 'canceled':
+      return 'Canceled'
+    case 'incomplete':
+      return 'Incomplete'
+  }
 }
 
 export function formatCacheHitRate(cache: UsageCacheTotals): string {
