@@ -32,8 +32,14 @@ export type UsageFilterOptions = {
   groups: string[]
 }
 
+export type UsageEndpoint =
+  | 'openai_responses'
+  | 'openai_chat_completions'
+  | 'claude_messages'
+
 export type UsageRequestSummary = {
   requestId: string
+  endpoint: UsageEndpoint | null
   apiKeyId: string | null
   apiKeyLabel: string | null
   apiKeyGroupLabel: string | null

@@ -7,7 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatUsageDateTime } from '@/features/usage/usage-format'
+import {
+  formatUsageDateTime,
+  formatUsageEndpoint,
+} from '@/features/usage/usage-format'
 import { UsageLatency } from '@/features/usage/usage-latency'
 import { CostBreakdown, TokensBreakdown } from '@/features/usage/usage-breakdowns'
 import type { UsageRange, UsageRequestSummary } from '@/features/usage/usage-types'
@@ -30,6 +33,7 @@ export function UsageRequestsTable({
           <TableRow>
             <TableHead className="pl-4">API Key</TableHead>
             <TableHead>Model</TableHead>
+            <TableHead>Endpoint</TableHead>
             <TableHead>Reasoning effort</TableHead>
             <TableHead>Group</TableHead>
             <TableHead>Tokens</TableHead>
@@ -48,6 +52,9 @@ export function UsageRequestsTable({
                 </TableCell>
                 <TableCell className="max-w-44 truncate font-mono text-xs">
                   {item.clientModel ?? '—'}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground">
+                  {formatUsageEndpoint(item.endpoint)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {item.reasoningEffort ?? '—'}

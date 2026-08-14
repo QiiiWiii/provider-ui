@@ -2,20 +2,22 @@ import type {
   UsageCacheTotals,
   UsageCostTotals,
   UsageFilterOptions,
+  UsageEndpoint,
   UsageOverview,
   UsageRequestSummary,
   UsageRequestDetail,
   UsageRequests,
   UsageTokenTotals,
-} from '@/features/usage/usage-types'
+} from './usage-types.ts'
 import {
+  optionalEnum,
   requireArray,
   requireNonEmptyString,
   requireNonNegativeInteger,
   requirePositiveInteger,
   requireRecord,
   requireTimestamp,
-} from '@/lib/api/decode'
+} from '../../lib/api/decode.ts'
 
 export function decodeUsageOverview(value: unknown): UsageOverview {
   const record = requireRecord(value, 'usage overview')
@@ -162,6 +164,7 @@ function decodeRequestSummary(value: unknown, label: string): UsageRequestSummar
 
   return {
     requestId: requireNonEmptyString(record.request_id, `${label} request id`),
+    endpoint: decodeUsageEndpoint(record.endpoint, `${label} endpoint`),
     apiKeyId:
       record.api_key_id == null
         ? null
@@ -194,6 +197,16 @@ function decodeRequestSummary(value: unknown, label: string): UsageRequestSummar
     tokens: decodeTokenTotals(record.tokens),
     cost: decodeCostTotals(record.cost),
   }
+}
+
+const usageEndpoints = [
+  'openai_responses',
+  'openai_chat_completions',
+  'claude_messages',
+] as const satisfies readonly UsageEndpoint[]
+
+function decodeUsageEndpoint(value: unknown, label: string): UsageEndpoint | null {
+  return optionalEnum(value, usageEndpoints, label)
 }
 
 function decodeTokenTotals(value: unknown): UsageTokenTotals {
