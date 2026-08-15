@@ -229,7 +229,7 @@ function ProviderCard({
 
   return (
     <Card
-      className="cursor-pointer gap-4 p-4 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="cursor-pointer gap-4 p-4 transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       role="link"
       tabIndex={0}
       aria-label={`Open ${account.label} details`}
