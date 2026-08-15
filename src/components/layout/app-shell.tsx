@@ -128,7 +128,7 @@ function AppSidebar({ user }: { user: AuthUser }) {
               }
               className="hover:bg-transparent active:bg-transparent"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm shadow-sidebar-primary/20">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm shadow-sidebar-primary/20">
                 <BoxesIcon className="size-4" />
               </span>
               <span className="grid flex-1 text-left leading-tight">

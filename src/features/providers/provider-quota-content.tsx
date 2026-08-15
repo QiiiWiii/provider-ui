@@ -233,7 +233,7 @@ function BillingSummary({
         </span>
       </div>
       {attributes.length > 0 ? (
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-muted/35 p-3 text-xs">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-muted/50 p-3 text-xs">
           {attributes.map((attribute) => (
             <div key={attribute.key} className="grid gap-0.5">
               <dt className="text-muted-foreground">{attribute.label}</dt>

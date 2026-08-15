@@ -77,7 +77,7 @@ export function ProviderDetail({
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-start gap-3">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-muted/45 text-muted-foreground shadow-xs">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-muted/50 text-muted-foreground shadow-xs">
               <ServerIcon className="size-5" />
             </span>
             <div className="grid min-w-0 gap-1">

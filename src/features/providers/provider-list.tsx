@@ -122,7 +122,7 @@ function ProviderAccounts({
       <Card className="hidden gap-0 py-0 md:flex">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/55 hover:bg-muted/55">
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="pl-4">Provider</TableHead>
               <TableHead>Access</TableHead>
               <TableHead>Credential</TableHead>
@@ -229,7 +229,7 @@ function ProviderCard({
 
   return (
     <Card
-      className="cursor-pointer gap-4 p-4 transition-colors hover:bg-muted/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="cursor-pointer gap-4 p-4 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       role="link"
       tabIndex={0}
       aria-label={`Open ${account.label} details`}
@@ -290,7 +290,7 @@ function ProviderCard({
 function ProviderIdentity({ account }: { account: ProviderAccount }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/45 text-muted-foreground shadow-xs">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/50 text-muted-foreground shadow-xs">
         <ServerIcon className="size-4" />
       </span>
       <span className="grid min-w-0 gap-0.5">
@@ -408,7 +408,7 @@ function ProviderListLoading() {
   return (
     <>
       <Card className="hidden gap-0 py-0 md:flex">
-        <div className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.4fr_auto] gap-4 border-b bg-muted/35 px-4 py-3">
+        <div className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.4fr_auto] gap-4 border-b bg-muted/50 px-4 py-3">
           {Array.from({ length: 7 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-20" />
           ))}

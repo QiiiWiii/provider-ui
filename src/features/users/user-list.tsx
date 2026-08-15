@@ -80,7 +80,7 @@ function UserCollection({
       <Card className="hidden gap-0 py-0 lg:flex">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/55 hover:bg-muted/55">
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="pl-4">User</TableHead>
               <TableHead>Permission</TableHead>
               <TableHead>Status</TableHead>
@@ -197,7 +197,7 @@ function UserIdentity({
 }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/45 text-muted-foreground shadow-xs">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/50 text-muted-foreground shadow-xs">
         <UsersIcon className="size-4" />
       </span>
       <span className="grid min-w-0 gap-1">
@@ -221,7 +221,7 @@ function UserListLoading() {
   return (
     <>
       <Card className="hidden gap-0 py-0 lg:flex">
-        <div className="grid grid-cols-[2fr_1fr_1fr_0.8fr_1.4fr] gap-4 border-b bg-muted/35 px-4 py-3">
+        <div className="grid grid-cols-[2fr_1fr_1fr_0.8fr_1.4fr] gap-4 border-b bg-muted/50 px-4 py-3">
           {Array.from({ length: 5 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-20" />
           ))}

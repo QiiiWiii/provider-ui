@@ -235,7 +235,7 @@ function SelectionCard({
       className="group relative flex min-h-40 flex-col gap-4 rounded-xl border bg-card p-5 shadow-xs outline-none transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="flex size-10 items-center justify-center rounded-xl border bg-muted/45 text-muted-foreground transition-colors group-hover:text-foreground">
+        <span className="flex size-10 items-center justify-center rounded-xl border bg-muted/50 text-muted-foreground transition-colors group-hover:text-foreground">
           <Icon className="size-5" />
         </span>
         {recommended ? (

@@ -316,7 +316,7 @@ function CreatedApiKeyResult({ label, value }: { label: string; value: string })
   return (
     <>
       <DialogHeader>
-        <div className="mb-1 flex size-10 items-center justify-center rounded-xl border bg-muted/45 text-muted-foreground">
+        <div className="mb-1 flex size-10 items-center justify-center rounded-xl border bg-muted/50 text-muted-foreground">
           <KeyRoundIcon className="size-5" />
         </div>
         <DialogTitle>{label} is saved</DialogTitle>

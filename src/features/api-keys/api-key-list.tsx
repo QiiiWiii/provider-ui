@@ -110,7 +110,7 @@ function ApiKeyCollection({
       <Card className="hidden gap-0 py-0 lg:flex">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/55 hover:bg-muted/55">
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="pl-4">Name</TableHead>
               <TableHead>API Key</TableHead>
               <TableHead>Group</TableHead>
@@ -340,7 +340,7 @@ function ApiKeyListLoading() {
   return (
     <>
       <Card className="hidden gap-0 py-0 lg:flex">
-        <div className="grid grid-cols-7 gap-4 border-b bg-muted/35 px-4 py-3">
+        <div className="grid grid-cols-7 gap-4 border-b bg-muted/50 px-4 py-3">
           {Array.from({ length: 7 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-20" />
           ))}

@@ -134,7 +134,7 @@ export function ProviderModelEditDialog({
           <FieldGroup>
             <Field>
               <FieldLabel>Upstream Model</FieldLabel>
-              <code className="rounded-lg border bg-muted/45 px-2.5 py-2 font-mono text-xs break-all">
+              <code className="rounded-lg border bg-muted/50 px-2.5 py-2 font-mono text-xs break-all">
                 {model.upstreamModel}
               </code>
             </Field>

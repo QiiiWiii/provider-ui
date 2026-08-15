@@ -117,7 +117,7 @@ export function ProviderJsonImportForm({
 
           <Field data-invalid={Boolean(fileError)}>
             <FieldLabel htmlFor="credential-file">Load a JSON file</FieldLabel>
-            <div className="rounded-xl border border-dashed bg-muted/20 p-4">
+            <div className="rounded-lg border border-dashed bg-muted/50 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-background text-muted-foreground ring-1 ring-foreground/10">
                   <UploadIcon className="size-4" />

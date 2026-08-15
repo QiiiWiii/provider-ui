@@ -277,7 +277,7 @@ function OAuthSessionCard({
           <span className="text-xs font-medium text-muted-foreground">
             Authorization code
           </span>
-          <code className="rounded-xl border bg-muted/45 px-4 py-4 text-center font-mono text-xl font-semibold tracking-[0.2em] text-foreground select-all">
+          <code className="rounded-lg border bg-muted/50 px-4 py-4 text-center font-mono text-xl font-semibold tracking-[0.2em] text-foreground select-all">
             {session.challenge.userCode}
           </code>
         </div>
@@ -292,7 +292,7 @@ function OAuthSessionCard({
           <ExternalLinkIcon />
         </Button>
 
-        <div className="flex items-center gap-2 rounded-lg bg-muted/45 px-3 py-2.5 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground">
           <Clock3Icon className="size-4 shrink-0" />
           <span>
             Code expires {formatTimestamp(session.challenge.expiresAt)}

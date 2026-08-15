@@ -164,7 +164,7 @@ function ModelsTable({
           <div className="hidden md:block">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/35 hover:bg-muted/35">
+                <TableRow className="bg-muted/50 hover:bg-muted/50">
                   <TableHead className="pl-4">Model</TableHead>
                   <TableHead>Upstream</TableHead>
                   <TableHead>Pricing</TableHead>
