@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from 'next-themes'
 import { useEffect, useRef, type PropsWithChildren } from 'react'
 
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -6,18 +7,27 @@ import { AuthProvider } from '@/features/auth/auth-provider'
 import { setupStatusQueryKey } from '@/features/auth/setup-status-query'
 import type { AuthState } from '@/features/auth/auth-types'
 import { useAuthState } from '@/features/auth/use-auth-state'
+import { themeStorageKey } from '@/lib/theme'
 
 const queryClient = new QueryClient()
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <QueryCacheSessionBoundary>
-          <TooltipProvider>{children}</TooltipProvider>
-        </QueryCacheSessionBoundary>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="class"
+      storageKey={themeStorageKey}
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <QueryCacheSessionBoundary>
+            <TooltipProvider>{children}</TooltipProvider>
+          </QueryCacheSessionBoundary>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }
 

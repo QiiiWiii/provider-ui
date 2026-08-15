@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 
+import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -87,6 +88,7 @@ export function AppShell() {
               {getPageTitle(location.pathname)}
             </span>
           </div>
+          <ThemeToggle className="ml-auto text-muted-foreground" />
         </header>
         <div
           ref={scrollContainerRef}
