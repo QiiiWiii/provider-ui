@@ -3,7 +3,9 @@ import {
   formatUsageLatencyMs,
   totalLatencyMs,
 } from '@/features/usage/usage-latency-format'
-import { latencyIndicator } from '@/features/usage/usage-latency-scale'
+import { latencyTone } from '@/features/usage/usage-latency-scale'
+import { statusFillTone, type StatusTone } from '@/lib/status-tone'
+import { cn } from '@/lib/utils'
 
 type UsageLatencyProps = {
   startedAtMs: number
@@ -18,8 +20,8 @@ export function UsageLatency({
 }: UsageLatencyProps) {
   const firstTokenMs = elapsedLatencyMs(startedAtMs, firstTokenAtMs)
   const totalMs = totalLatencyMs(startedAtMs, completedAtMs)
-  const firstTokenIndicator = latencyIndicator(firstTokenMs, 'ttft')
-  const totalIndicator = latencyIndicator(totalMs, 'total')
+  const firstTokenTone = latencyTone(firstTokenMs, 'ttft')
+  const totalTone = latencyTone(totalMs, 'total')
 
   return (
     <div className="flex w-fit items-stretch gap-2">
@@ -27,8 +29,8 @@ export function UsageLatency({
         aria-hidden
         className="grid w-1 shrink-0 grid-rows-2 gap-0.5 py-0.5"
       >
-        <LatencySegment color={firstTokenIndicator?.color} />
-        <LatencySegment color={totalIndicator?.color} />
+        <LatencySegment tone={firstTokenTone} />
+        <LatencySegment tone={totalTone} />
       </div>
       <dl className="grid grid-cols-[auto_auto] gap-x-2 gap-y-0.5 text-xs leading-4 tabular-nums">
         <LatencyRow label="TTFT" ms={firstTokenMs} />
@@ -38,11 +40,13 @@ export function UsageLatency({
   )
 }
 
-function LatencySegment({ color }: { color: string | undefined }) {
+function LatencySegment({ tone }: { tone: StatusTone | null }) {
   return (
     <span
-      className="block min-h-3 rounded-full bg-muted"
-      style={color ? { backgroundColor: color } : undefined}
+      className={cn(
+        'block min-h-3 rounded-full bg-muted',
+        tone && statusFillTone(tone),
+      )}
     />
   )
 }

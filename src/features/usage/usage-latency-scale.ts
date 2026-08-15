@@ -1,50 +1,36 @@
+import type { StatusTone } from '@/lib/status-tone'
+
 export type LatencyMetric = 'ttft' | 'total'
 
 type LatencyScale = {
-  greenMaxMs: number
-  redMinMs: number
-}
-
-type LatencyIndicator = {
-  color: string
-  tone: 'green' | 'yellow' | 'red'
+  fastMaxMs: number
+  slowMinMs: number
 }
 
 const LATENCY_SCALES: Record<LatencyMetric, LatencyScale> = {
   ttft: {
-    greenMaxMs: 30_000,
-    redMinMs: 60_000,
+    fastMaxMs: 30_000,
+    slowMinMs: 60_000,
   },
   total: {
-    greenMaxMs: 60_000,
-    redMinMs: 300_000,
+    fastMaxMs: 60_000,
+    slowMinMs: 300_000,
   },
 }
 
-const LATENCY_COLORS = {
-  green: '#22c55e',
-  yellow: '#eab308',
-  red: '#ef4444',
-} as const
-
-export function latencyIndicator(
+export function latencyTone(
   ms: number | null,
   metric: LatencyMetric,
-): LatencyIndicator | null {
+): StatusTone | null {
   if (ms === null || ms < 0) {
     return null
   }
 
   const scale = LATENCY_SCALES[metric]
-  const tone =
-    ms < scale.greenMaxMs
-      ? 'green'
-      : ms < scale.redMinMs
-        ? 'yellow'
-        : 'red'
 
-  return {
-    color: LATENCY_COLORS[tone],
-    tone,
+  if (ms < scale.fastMaxMs) {
+    return 'success'
   }
+
+  return ms < scale.slowMinMs ? 'warning' : 'danger'
 }
