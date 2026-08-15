@@ -39,6 +39,8 @@ import type {
 } from '@/features/providers/provider-types'
 import { ApiError } from '@/lib/api/error'
 import { formatUnixSeconds } from '@/lib/datetime'
+import { statusTextTone } from '@/lib/status-tone'
+import { cn } from '@/lib/utils'
 
 
 export function ProviderOAuthFlow({
@@ -208,7 +210,9 @@ function OAuthSessionCard({
     return (
       <Card>
         <CardContent className="flex items-center gap-3 py-4">
-          <CircleCheckIcon className="size-5 text-emerald-600" />
+          <CircleCheckIcon
+            className={cn('size-5', statusTextTone('success'))}
+          />
           <div>
             <p className="font-medium">Authorization completed</p>
             <p className="text-sm text-muted-foreground">

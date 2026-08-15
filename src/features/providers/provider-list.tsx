@@ -53,8 +53,9 @@ import type {
   ProviderAccountWithQuota,
   ProviderCredentialKind,
 } from '@/features/providers/provider-types'
-import { cn } from '@/lib/utils'
 import { formatUnixSeconds } from '@/lib/datetime'
+import { statusBadgeTone } from '@/lib/status-tone'
+import { cn } from '@/lib/utils'
 
 export function ProviderList({ currentUserId }: { currentUserId: string }) {
   const providers = useQuery(providersQueryOptions)
@@ -516,8 +517,7 @@ function getProviderStatus(account: ProviderAccount): {
     return {
       label: 'Reauthentication required',
       icon: CircleAlertIcon,
-      className:
-        'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300',
+      className: statusBadgeTone('warning'),
     }
   }
 
@@ -525,8 +525,7 @@ function getProviderStatus(account: ProviderAccount): {
     return {
       label: 'Activated',
       icon: CircleCheckIcon,
-      className:
-        'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300',
+      className: statusBadgeTone('success'),
     }
   }
 

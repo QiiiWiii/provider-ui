@@ -42,6 +42,7 @@ import { formatProviderModelInputModalities } from '@/features/providers/provide
 import type { ProviderModel } from '@/features/providers/provider-types'
 import { ModelPricingSummary } from '@/features/providers/provider-model-pricing.tsx'
 import { formatUnixSeconds } from '@/lib/datetime'
+import { statusBadgeTone } from '@/lib/status-tone'
 
 function formatTimestamp(timestamp: number): string {
   return formatUnixSeconds(timestamp)
@@ -317,10 +318,7 @@ function ModelStatusBadge({ model }: { model: ProviderModel }) {
   }
 
   return (
-    <Badge
-      variant="outline"
-      className="border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
-    >
+    <Badge variant="outline" className={statusBadgeTone('success')}>
       Ready
     </Badge>
   )
