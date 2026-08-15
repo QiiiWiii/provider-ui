@@ -48,7 +48,7 @@ function UsageStat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="gap-2 p-4">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <span className="font-heading text-2xl leading-none font-semibold tabular-nums">
+      <span className="text-2xl leading-none font-semibold tracking-tight tabular-nums">
         {value}
       </span>
     </Card>

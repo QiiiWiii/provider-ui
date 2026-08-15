@@ -205,7 +205,9 @@ function CreateStep({
           {backLabel}
         </Button>
         <div className="grid gap-1.5">
-          <h1 className="text-2xl font-semibold tracking-[-0.025em]">{title}</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-[-0.025em]">
+            {title}
+          </h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
             {description}
           </p>

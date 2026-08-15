@@ -81,7 +81,7 @@ export function ProviderDetail({
               <ServerIcon className="size-5" />
             </span>
             <div className="grid min-w-0 gap-1">
-              <h1 className="truncate text-2xl font-semibold tracking-[-0.025em]">
+              <h1 className="truncate font-heading text-2xl font-semibold tracking-[-0.025em]">
                 {account.data.label}
               </h1>
               <p className="text-sm text-muted-foreground">

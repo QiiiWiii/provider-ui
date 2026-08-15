@@ -83,7 +83,7 @@ export function ProviderHealthCard({
             <span className="text-xs font-medium text-muted-foreground">
               Success rate
             </span>
-            <span className="text-xl font-semibold tabular-nums text-success-subtle-foreground">
+            <span className="text-xl font-semibold tracking-tight tabular-nums text-success-subtle-foreground">
               {successRate}
             </span>
           </div>
@@ -91,7 +91,7 @@ export function ProviderHealthCard({
             <span className="text-xs font-medium text-muted-foreground">
               Successful
             </span>
-            <span className="text-xl font-semibold tabular-nums text-success-subtle-foreground">
+            <span className="text-xl font-semibold tracking-tight tabular-nums text-success-subtle-foreground">
               {formatCount(successes)}
             </span>
           </div>
@@ -99,7 +99,7 @@ export function ProviderHealthCard({
             <span className="text-xs font-medium text-muted-foreground">
               Failed
             </span>
-            <span className="text-xl font-semibold tabular-nums text-danger-subtle-foreground">
+            <span className="text-xl font-semibold tracking-tight tabular-nums text-danger-subtle-foreground">
               {formatCount(failures)}
             </span>
           </div>
