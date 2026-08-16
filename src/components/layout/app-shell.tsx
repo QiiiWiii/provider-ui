@@ -515,6 +515,9 @@ function NavigationMenu({
   // Only the group holding the route mounts an active pill. One pill cannot
   // slide between two lists, and fading this one out instead would slide it
   // home on the way, lighting up rows the route never touched.
+  //
+  // Order matters: the pills paint in DOM order, and hovering the current row
+  // parks them on each other, so the active one has to come second to win.
   return (
     <div
       className={cn('relative', navigationGeometry)}
@@ -525,25 +528,25 @@ function NavigationMenu({
         }
       }}
     >
+      <span
+        aria-hidden
+        style={{ '--nav-index': highlightPosition } as CSSProperties}
+        className={cn(
+          navigationIndicatorClasses,
+          'bg-sidebar-accent duration-200',
+          highlightIndex === null && 'opacity-0',
+        )}
+      />
       {activeIndex < 0 ? null : (
         <span
           aria-hidden
           style={{ '--nav-index': activeIndex } as CSSProperties}
           className={cn(
             navigationIndicatorClasses,
-            'bg-sidebar-accent shadow-xs duration-300',
+            'bg-sidebar-selected duration-300',
           )}
         />
       )}
-      <span
-        aria-hidden
-        style={{ '--nav-index': highlightPosition } as CSSProperties}
-        className={cn(
-          navigationIndicatorClasses,
-          'bg-sidebar-accent/60 duration-200',
-          highlightIndex === null && 'opacity-0',
-        )}
-      />
       <SidebarMenu className="gap-(--nav-item-gap)">
         {items.map((item, index) => (
           <SidebarMenuItem
@@ -613,7 +616,7 @@ function UserAccount({ user }: { user: AuthUser }) {
           <button
             type="button"
             aria-label={`Account menu for ${user.username}`}
-            className="flex h-12 w-full min-w-0 items-center gap-2 rounded-lg bg-sidebar-accent/60 p-2 text-left transition-colors hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-sidebar-ring/50 focus-visible:outline-none group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-0!"
+            className="flex h-12 w-full min-w-0 items-center gap-2 rounded-lg bg-sidebar-accent p-2 text-left transition-colors hover:bg-sidebar-selected focus-visible:ring-[3px] focus-visible:ring-sidebar-ring/50 focus-visible:outline-none group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-0!"
           />
         }
       >
