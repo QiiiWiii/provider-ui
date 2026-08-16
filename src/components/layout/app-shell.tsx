@@ -1,4 +1,4 @@
-import type { CSSProperties, PointerEvent, KeyboardEvent } from 'react'
+import type { CSSProperties, FocusEvent, PointerEvent, KeyboardEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   BoxesIcon,
@@ -449,6 +449,25 @@ type NavigationItem = {
   superAdminOnly: boolean
 }
 
+// The two pills are absolutely positioned over the list, so their geometry has
+// to agree with the buttons' exactly. Both read the same variables, and one row
+// is a button plus the gap below it, which puts row n exactly n pitches down.
+// The collapsed rail restates only the height, because there the sidebar
+// primitive forces every button to a 32px square.
+const navigationGeometry =
+  '[--nav-item-gap:6px] [--nav-item-height:36px] group-data-[collapsible=icon]:[--nav-item-height:32px]'
+
+// The curve carries the pill slightly past its target and back, which is what
+// makes the move read as a slide rather than a jump. Width and height ride it
+// too, or collapsing would snap the pill to the rail while the buttons are
+// still shrinking around it; overshooting either is imperceptible over these
+// distances. Nothing there fights the resize drag, because while expanded the
+// pill stays at w-full: only the collapse changes its computed width, so only
+// the collapse animates it. prefers-reduced-motion needs nothing here,
+// index.css already flattens every transition in the app.
+const navigationIndicatorClasses =
+  'pointer-events-none absolute top-0 left-0 h-(--nav-item-height) w-full translate-y-[calc((var(--nav-item-height)+var(--nav-item-gap))*var(--nav-index))] rounded-lg transition-[translate,opacity,width,height] ease-[cubic-bezier(0.24,1.56,0.54,1)] group-data-[collapsible=icon]:w-8'
+
 function NavigationMenu({
   items,
   onNavigate,
@@ -457,30 +476,95 @@ function NavigationMenu({
   onNavigate: () => void
 }) {
   const location = useLocation()
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
 
+  // Every index is over the rendered items rather than the source array: role
+  // filtering removes rows above the ones that stay, and each removal would
+  // otherwise slide both pills a row too far down. A pointer outranks the
+  // keyboard, because both are set at once after a click and the mouse is the
+  // more recent intent. With neither set the hover pill parks on the active
+  // row, so the next hover grows out of the current page instead of sliding in
+  // from the top of the list.
+  const activeIndex = items.findIndex((item) =>
+    isNavigationItemActive(location.pathname, item.href),
+  )
+  const highlightIndex = hoveredIndex ?? focusedIndex
+  const highlightPosition = highlightIndex ?? Math.max(activeIndex, 0)
+
+  function handleFocus(event: FocusEvent<HTMLElement>, index: number) {
+    // A click focuses the link too, and that pill would then outlive the
+    // pointer that drew it. :focus-visible is what separates the two.
+    if (event.target.matches(':focus-visible')) {
+      setFocusedIndex(index)
+    }
+  }
+
+  // Leaving and blurring are watched on the wrapper, not on each row: a step
+  // from one row to the next leaves the first, and per-row handlers would read
+  // that as leaving the menu and blink the pill out and back on every step. The
+  // rows then need z-10 to stay above the pills, and the buttons hand over
+  // every background they would have drawn themselves, keeping only the text
+  // treatment, or a pill and its button would stack.
+  //
+  // Only the group holding the route mounts an active pill. One pill cannot
+  // slide between two lists, and fading this one out instead would slide it
+  // home on the way, lighting up rows the route never touched.
   return (
-    <SidebarMenu className="gap-1.5">
-      {items.map((item) => {
-        const isActive =
-          location.pathname === item.href ||
-          location.pathname.startsWith(`${item.href}/`)
-
-        return (
-          <SidebarMenuItem key={item.href}>
+    <div
+      className={cn('relative', navigationGeometry)}
+      onPointerLeave={() => setHoveredIndex(null)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setFocusedIndex(null)
+        }
+      }}
+    >
+      {activeIndex < 0 ? null : (
+        <span
+          aria-hidden
+          style={{ '--nav-index': activeIndex } as CSSProperties}
+          className={cn(
+            navigationIndicatorClasses,
+            'bg-sidebar-accent shadow-xs duration-300',
+          )}
+        />
+      )}
+      <span
+        aria-hidden
+        style={{ '--nav-index': highlightPosition } as CSSProperties}
+        className={cn(
+          navigationIndicatorClasses,
+          'bg-sidebar-accent/60 duration-200',
+          highlightIndex === null && 'opacity-0',
+        )}
+      />
+      <SidebarMenu className="gap-(--nav-item-gap)">
+        {items.map((item, index) => (
+          <SidebarMenuItem
+            key={item.href}
+            className="z-10"
+            onPointerEnter={() => setHoveredIndex(index)}
+          >
             <SidebarMenuButton
               tooltip={item.label}
-              isActive={isActive}
+              isActive={index === activeIndex}
               render={<NavLink to={item.href} onClick={onNavigate} />}
-              className="h-9 rounded-lg px-2.5 data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground data-active:shadow-xs"
+              onFocus={(event) => handleFocus(event, index)}
+              className="h-(--nav-item-height) rounded-lg px-2.5 hover:bg-transparent active:bg-transparent data-active:bg-transparent data-active:text-sidebar-accent-foreground"
             >
               <item.icon />
               <span>{item.label}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        )
-      })}
-    </SidebarMenu>
+        ))}
+      </SidebarMenu>
+    </div>
   )
+}
+
+function isNavigationItemActive(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`)
 }
 
 function UserAccount({ user }: { user: AuthUser }) {
