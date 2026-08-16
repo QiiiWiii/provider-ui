@@ -212,6 +212,39 @@
   }
 }
 
+/* Pointer capture keeps a drag alive far outside the handle, so the cursor and
+   the selection lock are held on the wrapper for the duration. */
+[data-slot="sidebar-wrapper"][data-resizing] {
+  user-select: none;
+}
+
+[data-slot="sidebar-wrapper"][data-resizing="both"] {
+  cursor: col-resize;
+}
+
+[data-slot="sidebar-wrapper"][data-resizing="left"] {
+  cursor: w-resize;
+}
+
+[data-slot="sidebar-wrapper"][data-resizing="right"] {
+  cursor: e-resize;
+}
+
+/* The handle picks its cursor from the committed width, which goes stale once a
+   drag starts writing widths straight to the DOM. Defer to the wrapper so both
+   agree on which end has run out. */
+[data-slot="sidebar-wrapper"][data-resizing] [data-slot="sidebar-resize-handle"] {
+  cursor: inherit;
+}
+
+/* The width has to track the pointer exactly, so the transitions that make
+   collapsing look smooth are suppressed while dragging. This lives here rather
+   than in a className because the gap element takes no props. */
+[data-slot="sidebar-wrapper"][data-resizing] [data-slot="sidebar-gap"],
+[data-slot="sidebar-wrapper"][data-resizing] [data-slot="sidebar-container"] {
+  transition: none;
+}
+
 @media (pointer: coarse) {
   [data-slot="button"],
   [data-slot="dropdown-menu-trigger"],
