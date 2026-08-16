@@ -157,8 +157,14 @@ export function ApiKeyCreateDialog({
 
   const busy = submitting
 
+  // The created key is shown once and cannot be read back, so the backdrop no
+  // longer dismisses it. The close button, Done and Escape still do.
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      disablePointerDismissal
+    >
       <DialogTrigger render={<Button />}>
         <PlusIcon />
         Create API key
