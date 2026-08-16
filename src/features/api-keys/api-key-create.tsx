@@ -339,10 +339,11 @@ function CreatedApiKeyResult({ label, value }: { label: string; value: string })
 function generateApiKey(): string {
   const bytes = new Uint8Array(32)
   crypto.getRandomValues(bytes)
-  return btoa(String.fromCharCode(...bytes))
+  const secret = btoa(String.fromCharCode(...bytes))
     .replaceAll('+', '-')
     .replaceAll('/', '_')
     .replaceAll('=', '')
+  return `sk-${secret}`
 }
 
 function CreateError({ error }: { error: unknown }) {
