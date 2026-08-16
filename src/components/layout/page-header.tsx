@@ -16,12 +16,12 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 border-b border-border/70 pb-5 sm:flex-row sm:items-end sm:justify-between',
+        'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between',
         className,
       )}
     >
       <div className="grid max-w-2xl gap-1.5">
-        <h1 className="text-2xl font-semibold tracking-[-0.025em] text-balance">
+        <h1 className="font-heading text-2xl font-semibold tracking-[-0.025em] text-balance">
           {title}
         </h1>
         {description ? (

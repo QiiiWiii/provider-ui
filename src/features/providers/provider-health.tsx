@@ -66,13 +66,13 @@ export function ProviderHealthCard({
         >
           {successShare > 0 ? (
             <div
-              className="h-full bg-emerald-500 transition-[width]"
+              className="h-full bg-success transition-[width]"
               style={{ width: `${successShare}%` }}
             />
           ) : null}
           {failureShare > 0 ? (
             <div
-              className="h-full bg-red-500 transition-[width]"
+              className="h-full bg-danger transition-[width]"
               style={{ width: `${failureShare}%` }}
             />
           ) : null}
@@ -83,7 +83,7 @@ export function ProviderHealthCard({
             <span className="text-xs font-medium text-muted-foreground">
               Success rate
             </span>
-            <span className="text-xl font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+            <span className="text-xl font-semibold tracking-tight tabular-nums text-success-subtle-foreground">
               {successRate}
             </span>
           </div>
@@ -91,7 +91,7 @@ export function ProviderHealthCard({
             <span className="text-xs font-medium text-muted-foreground">
               Successful
             </span>
-            <span className="text-xl font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+            <span className="text-xl font-semibold tracking-tight tabular-nums text-success-subtle-foreground">
               {formatCount(successes)}
             </span>
           </div>
@@ -99,7 +99,7 @@ export function ProviderHealthCard({
             <span className="text-xs font-medium text-muted-foreground">
               Failed
             </span>
-            <span className="text-xl font-semibold tabular-nums text-red-700 dark:text-red-300">
+            <span className="text-xl font-semibold tracking-tight tabular-nums text-danger-subtle-foreground">
               {formatCount(failures)}
             </span>
           </div>

@@ -48,7 +48,7 @@ function UsageStat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="gap-2 p-4">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <span className="font-heading text-2xl leading-none font-semibold tabular-nums">
+      <span className="text-2xl leading-none font-semibold tracking-tight tabular-nums">
         {value}
       </span>
     </Card>
@@ -57,7 +57,7 @@ function UsageStat({ label, value }: { label: string; value: string }) {
 
 function UsageEmpty() {
   return (
-    <Card className="min-h-80 justify-center">
+    <Card className="min-h-64 justify-center">
       <Empty className="border-0">
         <EmptyHeader>
           <EmptyMedia variant="icon" className="size-10 rounded-xl">

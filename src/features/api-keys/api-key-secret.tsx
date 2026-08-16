@@ -20,7 +20,7 @@ export function ApiKeySecret({ value }: { value: string }) {
 
   return (
     <div className="grid gap-2">
-      <div className="flex min-w-0 items-center gap-2 rounded-xl border bg-muted/35 p-2 pl-3">
+      <div className="flex min-w-0 items-center gap-2 rounded-lg border bg-muted/50 p-2 pl-3">
         <code className="min-w-0 flex-1 select-all break-all font-mono text-xs leading-5">
           {value}
         </code>

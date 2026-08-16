@@ -24,6 +24,7 @@ import type {
   ProviderCredentialKind,
 } from '@/features/providers/provider-types'
 import { formatUnixSeconds } from '@/lib/datetime'
+import { statusBadgeTone } from '@/lib/status-tone'
 import { cn } from '@/lib/utils'
 
 export function ProviderOverview({
@@ -131,7 +132,7 @@ export function AccountStatusBadge({ account }: { account: ProviderAccount }) {
     return (
       <Badge
         variant="outline"
-        className="gap-1.5 border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
+        className={cn('gap-1.5', statusBadgeTone('warning'))}
       >
         <CircleAlertIcon />
         Reauthentication required
@@ -143,7 +144,7 @@ export function AccountStatusBadge({ account }: { account: ProviderAccount }) {
     return (
       <Badge
         variant="outline"
-        className="gap-1.5 border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+        className={cn('gap-1.5', statusBadgeTone('success'))}
       >
         <CircleCheckIcon />
         Activated

@@ -67,7 +67,7 @@ export function toDateTimeLocalValue(timestamp: number | null): string {
 
   const date = new Date(timestamp * 1000)
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
-  return local.toISOString().slice(0, 16)
+  return local.toISOString().slice(0, 19)
 }
 
 export function dateTimeLocalToTimestamp(value: string): number | null {

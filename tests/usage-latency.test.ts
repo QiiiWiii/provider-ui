@@ -6,9 +6,7 @@ import {
   formatUsageLatencyMs,
   totalLatencyMs,
 } from '../src/features/usage/usage-latency-format.ts'
-import {
-  latencyIndicator,
-} from '../src/features/usage/usage-latency-scale.ts'
+import { latencyTone } from '../src/features/usage/usage-latency-scale.ts'
 
 test('missing first-token time stays unknown instead of using total latency', () => {
   const startedAtMs = 1_000
@@ -28,23 +26,24 @@ test('first-token and total latency are calculated independently', () => {
 })
 
 test('TTFT and total latency use independent status scales', () => {
-  assert.deepEqual(latencyIndicator(100, 'ttft'), {
-    color: '#22c55e',
-    tone: 'green',
-  })
-  assert.deepEqual(latencyIndicator(300_000, 'total'), {
-    color: '#ef4444',
-    tone: 'red',
-  })
+  assert.equal(latencyTone(100, 'ttft'), 'success')
+  assert.equal(latencyTone(100, 'total'), 'success')
+  assert.equal(latencyTone(300_000, 'ttft'), 'danger')
+  assert.equal(latencyTone(300_000, 'total'), 'danger')
 })
 
-test('latency status moves from green to yellow to red', () => {
-  assert.equal(latencyIndicator(29_999, 'ttft')?.tone, 'green')
-  assert.equal(latencyIndicator(30_000, 'ttft')?.tone, 'yellow')
-  assert.equal(latencyIndicator(59_999, 'ttft')?.tone, 'yellow')
-  assert.equal(latencyIndicator(60_000, 'ttft')?.tone, 'red')
-  assert.equal(latencyIndicator(59_999, 'total')?.tone, 'green')
-  assert.equal(latencyIndicator(60_000, 'total')?.tone, 'yellow')
-  assert.equal(latencyIndicator(299_999, 'total')?.tone, 'yellow')
-  assert.equal(latencyIndicator(300_000, 'total')?.tone, 'red')
+test('unknown and negative latency carry no tone', () => {
+  assert.equal(latencyTone(null, 'ttft'), null)
+  assert.equal(latencyTone(-1, 'total'), null)
+})
+
+test('latency status moves from success to warning to danger', () => {
+  assert.equal(latencyTone(29_999, 'ttft'), 'success')
+  assert.equal(latencyTone(30_000, 'ttft'), 'warning')
+  assert.equal(latencyTone(59_999, 'ttft'), 'warning')
+  assert.equal(latencyTone(60_000, 'ttft'), 'danger')
+  assert.equal(latencyTone(59_999, 'total'), 'success')
+  assert.equal(latencyTone(60_000, 'total'), 'warning')
+  assert.equal(latencyTone(299_999, 'total'), 'warning')
+  assert.equal(latencyTone(300_000, 'total'), 'danger')
 })

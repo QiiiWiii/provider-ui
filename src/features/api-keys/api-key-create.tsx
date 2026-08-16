@@ -157,8 +157,14 @@ export function ApiKeyCreateDialog({
 
   const busy = submitting
 
+  // The created key is shown once and cannot be read back, so the backdrop no
+  // longer dismisses it. The close button, Done and Escape still do.
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      disablePointerDismissal
+    >
       <DialogTrigger render={<Button />}>
         <PlusIcon />
         Create API key
@@ -316,7 +322,7 @@ function CreatedApiKeyResult({ label, value }: { label: string; value: string })
   return (
     <>
       <DialogHeader>
-        <div className="mb-1 flex size-10 items-center justify-center rounded-xl border bg-muted/45 text-muted-foreground">
+        <div className="mb-1 flex size-10 items-center justify-center rounded-xl border bg-muted/50 text-muted-foreground">
           <KeyRoundIcon className="size-5" />
         </div>
         <DialogTitle>{label} is saved</DialogTitle>
@@ -333,10 +339,11 @@ function CreatedApiKeyResult({ label, value }: { label: string; value: string })
 function generateApiKey(): string {
   const bytes = new Uint8Array(32)
   crypto.getRandomValues(bytes)
-  return btoa(String.fromCharCode(...bytes))
+  const secret = btoa(String.fromCharCode(...bytes))
     .replaceAll('+', '-')
     .replaceAll('/', '_')
     .replaceAll('=', '')
+  return `sk-${secret}`
 }
 
 function CreateError({ error }: { error: unknown }) {

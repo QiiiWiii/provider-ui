@@ -21,7 +21,8 @@ export default defineConfig(({ command, mode }) => {
     server: proxyTarget
       ? {
           proxy: {
-            '/api': {
+            // Trailing slash required: '/api' also matches the /api-keys page.
+            '/api/': {
               target: proxyTarget,
               changeOrigin: true,
             },

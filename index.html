@@ -4,7 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>provider-ui</title>
+    <script>
+      // Apply the stored theme before first paint so a dark session does not
+      // flash the light canvas while the app boots. Runs before the bundle, so
+      // it cannot import the key: keep it in sync with src/lib/theme.ts and the
+      // class attribute configured in src/app/providers.tsx.
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('theme')
+          var dark =
+            stored === 'dark' ||
+            ((!stored || stored === 'system') &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) {
+            document.documentElement.classList.add('dark')
+          }
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+        } catch {
+          // Storage can be unavailable; the app falls back to the light canvas.
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

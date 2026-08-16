@@ -1,81 +1,60 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { useSearchParams } from 'react-router'
 
-import { Button } from '@/components/ui/button'
-import { FieldGroup } from '@/components/ui/field'
 import { startProviderOAuth } from '@/features/providers/provider-api'
 import {
   ProviderBaseFields,
-  ProviderFormCard,
+  ProviderCreateForm,
 } from '@/features/providers/provider-create-shared'
 import {
   defaultBaseValues,
   providerBaseSchema,
   type ProviderBaseValues,
 } from '@/features/providers/provider-create-schema'
+import { providerKeys } from '@/features/providers/providers-query'
 import type { OAuthProviderKind } from '@/features/providers/provider-types'
 
 export function ProviderOAuthStartForm({
   provider,
+  onSessionStarted,
 }: {
   provider: OAuthProviderKind
+  onSessionStarted: (sessionId: string) => void
 }) {
-  const [, setSearchParams] = useSearchParams()
   const form = useForm<ProviderBaseValues>({
     resolver: zodResolver(providerBaseSchema),
     defaultValues: defaultBaseValues,
   })
   const startOAuth = useMutation({
+    mutationKey: providerKeys.create,
     mutationFn: startProviderOAuth,
-    onSuccess: (session) => {
-      setSearchParams(
-        { provider, oauth_session: session.id },
-        { replace: true },
-      )
-    },
+    onSuccess: (session) => onSessionStarted(session.id),
   })
 
   return (
-    <ProviderFormCard
-      title="Provider details"
-      description="Account settings."
+    <ProviderCreateForm
+      formId="provider-oauth-form"
+      submitLabel="Start authorization"
+      pending={startOAuth.isPending}
       error={startOAuth.error}
-      footer={
-        <Button
-          type="submit"
-          form="provider-oauth-form"
-          disabled={startOAuth.isPending}
-        >
-          {startOAuth.isPending ? <Loader2Icon className="animate-spin" /> : null}
-          Start authorization
-        </Button>
-      }
+      onSubmit={form.handleSubmit((values) =>
+        startOAuth.mutate({ ...values, provider }),
+      )}
     >
-      <form
-        id="provider-oauth-form"
-        onSubmit={form.handleSubmit((values) =>
-          startOAuth.mutate({ ...values, provider }),
-        )}
-      >
-        <FieldGroup>
-          <ProviderBaseFields
-            disabled={startOAuth.isPending}
-            labelRegistration={form.register('label')}
-            groupLabelRegistration={form.register('groupLabel')}
-            visibilityRegistration={form.register('visibility')}
-            priorityRegistration={form.register('priority', {
-              valueAsNumber: true,
-            })}
-            labelError={form.formState.errors.label}
-            groupLabelError={form.formState.errors.groupLabel}
-            visibilityError={form.formState.errors.visibility}
-            priorityError={form.formState.errors.priority}
-          />
-        </FieldGroup>
-      </form>
-    </ProviderFormCard>
+      <ProviderBaseFields
+        disabled={startOAuth.isPending}
+        labelRegistration={form.register('label')}
+        groupLabelRegistration={form.register('groupLabel')}
+        visibilityRegistration={form.register('visibility')}
+        priorityRegistration={form.register('priority', {
+          valueAsNumber: true,
+        })}
+        labelError={form.formState.errors.label}
+        groupLabelError={form.formState.errors.groupLabel}
+        visibilityError={form.formState.errors.visibility}
+        priorityError={form.formState.errors.priority}
+      />
+    </ProviderCreateForm>
   )
 }

@@ -20,6 +20,7 @@ import type {
   UsageRequestStatus,
   UsageRequestSummary,
 } from '@/features/usage/usage-types'
+import { statusBadgeTone } from '@/lib/status-tone'
 
 export function UsageRequestsTable({
   items,
@@ -104,14 +105,10 @@ export function UsageRequestsTable({
 }
 
 const statusClasses: Record<UsageRequestStatus, string> = {
-  succeeded:
-    'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400',
-  failed:
-    'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400',
-  canceled:
-    'border-border bg-muted text-muted-foreground',
-  incomplete:
-    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400',
+  succeeded: statusBadgeTone('success'),
+  failed: statusBadgeTone('danger'),
+  canceled: statusBadgeTone('neutral'),
+  incomplete: statusBadgeTone('warning'),
 }
 
 function UsageStatusBadge({ status }: { status: UsageRequestStatus }) {

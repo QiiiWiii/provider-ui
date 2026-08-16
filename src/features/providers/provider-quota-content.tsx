@@ -27,6 +27,8 @@ import {
   rollingPeriodLabel,
 } from '@/features/providers/provider-quota-format'
 import { formatUnixSeconds } from '@/lib/datetime'
+import { statusBadgeTone } from '@/lib/status-tone'
+import { cn } from '@/lib/utils'
 
 export function ProviderQuotaContent({ quota }: { quota: ProviderQuota }) {
   if (quota.support === 'unsupported') {
@@ -231,7 +233,7 @@ function BillingSummary({
         </span>
       </div>
       {attributes.length > 0 ? (
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-muted/35 p-3 text-xs">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-muted/50 p-3 text-xs">
           {attributes.map((attribute) => (
             <div key={attribute.key} className="grid gap-0.5">
               <dt className="text-muted-foreground">{attribute.label}</dt>
@@ -371,7 +373,7 @@ export function ProviderQuotaFreshness({
       {quota.lastError ? (
         <Badge
           variant="outline"
-          className="gap-1.5 border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
+          className={cn('gap-1.5', statusBadgeTone('warning'))}
         >
           <CircleAlertIcon />
           Refresh failed

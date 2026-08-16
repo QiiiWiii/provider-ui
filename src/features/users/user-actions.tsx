@@ -49,7 +49,6 @@ export function UserEnabledControl({
 
   const switchControl = (
     <Switch
-      size="sm"
       checked={user.enabled}
       disabled={mutation.isPending || isSelf}
       aria-label={

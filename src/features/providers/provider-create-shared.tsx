@@ -1,23 +1,18 @@
-import { CircleAlertIcon } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { CircleAlertIcon, Loader2Icon } from 'lucide-react'
+import type { FormEventHandler, ReactNode } from 'react'
 import type {
   FieldError as ReactHookFormFieldError,
   UseFormRegisterReturn,
 } from 'react-hook-form'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { DialogClose, DialogFooter } from '@/components/ui/dialog'
 import {
   Field,
   FieldDescription,
   FieldError,
+  FieldGroup,
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -26,6 +21,7 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select'
 import { ApiError } from '@/lib/api/error'
+import { cn } from '@/lib/utils'
 
 export function ProviderBaseFields({
   disabled,
@@ -112,31 +108,72 @@ export function ProviderBaseFields({
     </>
   )
 }
-export function ProviderFormCard({
-  title,
-  description,
-  error,
-  footer,
+
+// The popup is capped at the viewport, so every step scrolls its own body and
+// leaves the header and the action row in place. Both bleed out to the popup
+// edge and re-apply its padding, the only way to reach that edge from inside.
+// The vertical pair nets out and buys 4px of clipping room for focus outlines.
+export function ProviderCreateBody({ children }: { children: ReactNode }) {
+  return (
+    <div className="-mx-6 -my-1 grid min-h-0 flex-1 gap-4 overflow-y-auto px-6 py-1">
+      {children}
+    </div>
+  )
+}
+
+export function ProviderCreateFooter({
+  className,
   children,
 }: {
-  title: string
-  description: string
-  error: unknown
-  footer: ReactNode
+  className?: string
   children: ReactNode
 }) {
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-5">
+    <DialogFooter className={cn('-mx-6 -mb-6 px-6 py-4', className)}>
+      {children}
+    </DialogFooter>
+  )
+}
+
+// The submit button sits in the footer, outside the form it submits, so the
+// action row stays pinned while the fields scroll. `form` ties them together.
+export function ProviderCreateForm({
+  formId,
+  submitLabel,
+  pending,
+  error,
+  onSubmit,
+  children,
+}: {
+  formId: string
+  submitLabel: string
+  pending: boolean
+  error: unknown
+  onSubmit: FormEventHandler<HTMLFormElement>
+  children: ReactNode
+}) {
+  return (
+    <>
+      <ProviderCreateBody>
         {error ? <ProviderMutationError error={error} /> : null}
-        {children}
-      </CardContent>
-      <CardFooter className="justify-end">{footer}</CardFooter>
-    </Card>
+        <form id={formId} onSubmit={onSubmit}>
+          <FieldGroup>{children}</FieldGroup>
+        </form>
+      </ProviderCreateBody>
+
+      <ProviderCreateFooter>
+        <DialogClose
+          disabled={pending}
+          render={<Button variant="outline" disabled={pending} />}
+        >
+          Cancel
+        </DialogClose>
+        <Button type="submit" form={formId} disabled={pending}>
+          {pending ? <Loader2Icon className="animate-spin" /> : null}
+          {submitLabel}
+        </Button>
+      </ProviderCreateFooter>
+    </>
   )
 }
 

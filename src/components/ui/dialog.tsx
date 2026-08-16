@@ -9,6 +9,8 @@ function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
+type DialogChangeEventDetails = DialogPrimitive.Root.ChangeEventDetails
+
 function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
 }
@@ -143,6 +145,8 @@ function DialogDescription({
     />
   )
 }
+
+export type { DialogChangeEventDetails }
 
 export {
   Dialog,

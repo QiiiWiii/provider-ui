@@ -8,7 +8,6 @@ import {
   CircleOffIcon,
   KeyRoundIcon,
   LockKeyholeIcon,
-  PlusIcon,
   RefreshCwIcon,
   ServerIcon,
   Share2Icon,
@@ -38,6 +37,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { ProviderEditDialog } from '@/features/providers/provider-account-edit'
+import { ProviderCreateDialog } from '@/features/providers/provider-create'
 import { formatProviderKind } from '@/features/providers/provider-format'
 import { ProviderQuotaSummary } from '@/features/providers/provider-quota'
 import {
@@ -53,8 +53,9 @@ import type {
   ProviderAccountWithQuota,
   ProviderCredentialKind,
 } from '@/features/providers/provider-types'
-import { cn } from '@/lib/utils'
 import { formatUnixSeconds } from '@/lib/datetime'
+import { statusBadgeTone } from '@/lib/status-tone'
+import { cn } from '@/lib/utils'
 
 export function ProviderList({ currentUserId }: { currentUserId: string }) {
   const providers = useQuery(providersQueryOptions)
@@ -76,12 +77,7 @@ export function ProviderList({ currentUserId }: { currentUserId: string }) {
       <PageHeader
         title="Providers"
         description="Manage upstream accounts and models."
-        actions={
-          <Button nativeButton={false} render={<Link to="/providers/new" />}>
-            <PlusIcon />
-            Add provider
-          </Button>
-        }
+        actions={<ProviderCreateDialog />}
       />
 
       {content}
@@ -121,7 +117,7 @@ function ProviderAccounts({
       <Card className="hidden gap-0 py-0 md:flex">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/55 hover:bg-muted/55">
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="pl-4">Provider</TableHead>
               <TableHead>Access</TableHead>
               <TableHead>Credential</TableHead>
@@ -228,7 +224,7 @@ function ProviderCard({
 
   return (
     <Card
-      className="cursor-pointer gap-4 p-4 transition-colors hover:bg-muted/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="cursor-pointer gap-4 p-4 transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       role="link"
       tabIndex={0}
       aria-label={`Open ${account.label} details`}
@@ -289,7 +285,7 @@ function ProviderCard({
 function ProviderIdentity({ account }: { account: ProviderAccount }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/45 text-muted-foreground shadow-xs">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/50 text-muted-foreground shadow-xs">
         <ServerIcon className="size-4" />
       </span>
       <span className="grid min-w-0 gap-0.5">
@@ -407,7 +403,7 @@ function ProviderListLoading() {
   return (
     <>
       <Card className="hidden gap-0 py-0 md:flex">
-        <div className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.4fr_auto] gap-4 border-b bg-muted/35 px-4 py-3">
+        <div className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.4fr_auto] gap-4 border-b bg-muted/50 px-4 py-3">
           {Array.from({ length: 7 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-20" />
           ))}
@@ -493,7 +489,7 @@ function ProviderListError({
 
 function ProviderListEmpty() {
   return (
-    <Card className="min-h-80 justify-center">
+    <Card className="min-h-64 flex-1 justify-center">
       <Empty className="border-0">
         <EmptyHeader>
           <EmptyMedia variant="icon" className="size-10 rounded-xl">
@@ -516,8 +512,7 @@ function getProviderStatus(account: ProviderAccount): {
     return {
       label: 'Reauthentication required',
       icon: CircleAlertIcon,
-      className:
-        'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300',
+      className: statusBadgeTone('warning'),
     }
   }
 
@@ -525,8 +520,7 @@ function getProviderStatus(account: ProviderAccount): {
     return {
       label: 'Activated',
       icon: CircleCheckIcon,
-      className:
-        'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300',
+      className: statusBadgeTone('success'),
     }
   }
 

@@ -50,6 +50,8 @@ import {
 import { providersQueryOptions } from '@/features/providers/providers-query'
 import { formatUsageCost } from '@/features/usage/usage-format'
 import { useMinuteNow } from '@/hooks/use-minute-now'
+import { statusBadgeTone, statusTextTone } from '@/lib/status-tone'
+import { cn } from '@/lib/utils'
 
 export function ApiKeyList() {
   const apiKeys = useQuery(apiKeysQueryOptions)
@@ -108,7 +110,7 @@ function ApiKeyCollection({
       <Card className="hidden gap-0 py-0 lg:flex">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/55 hover:bg-muted/55">
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="pl-4">Name</TableHead>
               <TableHead>API Key</TableHead>
               <TableHead>Group</TableHead>
@@ -278,7 +280,7 @@ function ExpirationSummary({
     <span
       className={
         expired
-          ? 'flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-300'
+          ? cn('flex items-center gap-1.5 text-sm', statusTextTone('warning'))
           : 'flex items-center gap-1.5 text-sm text-muted-foreground'
       }
       title={formatApiKeyDateTime(apiKey.expiresAt)}
@@ -315,8 +317,7 @@ const statusConfig: Record<
   active: {
     label: 'Active',
     icon: CircleCheckIcon,
-    className:
-      'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300',
+    className: statusBadgeTone('success'),
   },
   disabled: {
     label: 'Disabled',
@@ -326,14 +327,12 @@ const statusConfig: Record<
   expired: {
     label: 'Expired',
     icon: Clock3Icon,
-    className:
-      'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300',
+    className: statusBadgeTone('warning'),
   },
   exhausted: {
     label: 'Quota exhausted',
     icon: WalletCardsIcon,
-    className:
-      'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300',
+    className: statusBadgeTone('danger'),
   },
 }
 
@@ -341,7 +340,7 @@ function ApiKeyListLoading() {
   return (
     <>
       <Card className="hidden gap-0 py-0 lg:flex">
-        <div className="grid grid-cols-7 gap-4 border-b bg-muted/35 px-4 py-3">
+        <div className="grid grid-cols-7 gap-4 border-b bg-muted/50 px-4 py-3">
           {Array.from({ length: 7 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-20" />
           ))}
@@ -416,7 +415,7 @@ function ApiKeyListError({
 
 function ApiKeyListEmpty() {
   return (
-    <Card className="min-h-80 justify-center">
+    <Card className="min-h-64 flex-1 justify-center">
       <Empty className="border-0">
         <EmptyHeader>
           <EmptyMedia variant="icon" className="size-10 rounded-xl">
