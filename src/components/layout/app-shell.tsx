@@ -176,11 +176,16 @@ function AppSidebar({
   // already brings the same p-2 the header and footer use. And the brand tile is
   // size-8, not size-9, because the lg button's content box is 32px and clips
   // anything larger.
+  //
+  // Expanded, px-1 halves the rail's own padding: stacked on the p-2 the groups
+  // already carry, the rows land 12px from the window edge and from the card
+  // instead of 16px. The collapsed rule outranks it, so the rail above is
+  // unaffected.
   return (
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="group-data-[collapsible=icon]:pr-1 group-data-[collapsible=icon]:pl-3"
+      className="px-1 group-data-[collapsible=icon]:pr-1 group-data-[collapsible=icon]:pl-3"
     >
       <SidebarHeader className="pt-4">
         <SidebarMenu>
