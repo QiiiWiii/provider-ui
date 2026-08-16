@@ -133,7 +133,7 @@ function AppSidebar({ user }: { user: AuthUser }) {
               </span>
               <span className="grid flex-1 text-left leading-tight">
                 <span className="truncate font-semibold tracking-tight">Provider</span>
-                <span className="truncate text-xs text-sidebar-foreground/60">
+                <span className="truncate text-xs text-sidebar-muted-foreground">
                   Control plane
                 </span>
               </span>
@@ -248,7 +248,7 @@ function UserAccount({ user }: { user: AuthUser }) {
         </Avatar>
         <div className="grid min-w-0 flex-1 leading-tight group-data-[collapsible=icon]:hidden">
           <span className="truncate text-sm font-medium">{user.username}</span>
-          <span className="truncate text-xs text-sidebar-foreground/60">
+          <span className="truncate text-xs text-sidebar-muted-foreground">
             {formatRole(user.role)}
           </span>
         </div>
