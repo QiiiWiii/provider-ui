@@ -126,8 +126,19 @@ function AppSidebar({ user }: { user: AuthUser }) {
     }
   }
 
+  // Three things keep the collapsed icons centred and unclipped. The visible
+  // band of bg-sidebar runs from the window edge to the card at 72px while
+  // sidebar-container is 66px, so its symmetric p-2 is rebalanced below to match
+  // the band. SidebarContent carries no padding of its own, because SidebarGroup
+  // already brings the same p-2 the header and footer use. And the brand tile is
+  // size-8, not size-9, because the lg button's content box is 32px and clips
+  // anything larger.
   return (
-    <Sidebar variant="inset" collapsible="icon" className="border-r border-sidebar-border/70">
+    <Sidebar
+      variant="inset"
+      collapsible="icon"
+      className="group-data-[collapsible=icon]:pr-1 group-data-[collapsible=icon]:pl-3"
+    >
       <SidebarHeader className="pt-4">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -142,7 +153,7 @@ function AppSidebar({ user }: { user: AuthUser }) {
               }
               className="hover:bg-transparent active:bg-transparent"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm shadow-sidebar-primary/20">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm shadow-sidebar-primary/20">
                 <BoxesIcon className="size-4" />
               </span>
               <span className="grid flex-1 text-left leading-tight">
@@ -156,7 +167,7 @@ function AppSidebar({ user }: { user: AuthUser }) {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="px-1">
+      <SidebarContent>
         <SidebarGroup className="pt-3">
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
