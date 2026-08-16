@@ -114,11 +114,14 @@
     --danger-subtle: oklch(0.965 0.016 27.325);
     --danger-subtle-foreground: oklch(0.47 0.17 27.325);
     --danger-border: oklch(0.9 0.05 27.325);
-    --info: oklch(0.6 0.15 250);
+    /* Cyan, not blue: `brand` owns the blue now, and an info chip sitting two
+       degrees off a link is not a distinction. Chroma runs lower than the
+       other families because cyan's sRGB ceiling is lower. */
+    --info: oklch(0.6 0.105 220);
     --info-foreground: oklch(0.985 0 0);
-    --info-subtle: oklch(0.965 0.016 250);
-    --info-subtle-foreground: oklch(0.47 0.13 250);
-    --info-border: oklch(0.9 0.048 250);
+    --info-subtle: oklch(0.965 0.016 220);
+    --info-subtle-foreground: oklch(0.47 0.082 220);
+    --info-border: oklch(0.9 0.048 220);
     --border: oklch(0.8873 0.0095 286);
     --input: oklch(0.853 0.0111 280);
     --ring: var(--brand);
@@ -177,11 +180,11 @@
     --danger-subtle: oklch(0.26 0.07 22.216);
     --danger-subtle-foreground: oklch(0.81 0.099 22.216);
     --danger-border: oklch(0.37 0.1 22.216);
-    --info: oklch(0.66 0.14 250);
-    --info-foreground: oklch(0.16 0.03 250);
-    --info-subtle: oklch(0.27 0.06 250);
-    --info-subtle-foreground: oklch(0.82 0.087 250);
-    --info-border: oklch(0.38 0.08 250);
+    --info: oklch(0.66 0.11 220);
+    --info-foreground: oklch(0.16 0.018 220);
+    --info-subtle: oklch(0.27 0.045 220);
+    --info-subtle-foreground: oklch(0.82 0.087 220);
+    --info-border: oklch(0.38 0.06 220);
     /* Solid rather than translucent white: a border does the work a shadow
        does in light mode, and holds even across all three surfaces. */
     --border: oklch(0.3466 0.0103 254);
