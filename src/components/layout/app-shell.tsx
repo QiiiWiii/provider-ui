@@ -2,15 +2,31 @@ import { useEffect, useRef, useState } from 'react'
 import {
   BoxesIcon,
   ChartNoAxesColumnIcon,
+  ChevronsUpDownIcon,
   KeyRoundIcon,
   LogOutIcon,
+  MonitorIcon,
+  MoonIcon,
+  SunIcon,
+  SunMoonIcon,
   UsersIcon,
 } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { NavLink, Outlet, useLocation } from 'react-router'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   Sidebar,
   SidebarContent,
@@ -51,6 +67,12 @@ const primaryNavigation = [
     icon: ChartNoAxesColumnIcon,
     superAdminOnly: false,
   },
+] as const
+
+const themeOptions = [
+  { value: 'light', label: 'Light', icon: SunIcon },
+  { value: 'dark', label: 'Dark', icon: MoonIcon },
+  { value: 'system', label: 'System', icon: MonitorIcon },
 ] as const
 
 const administrationNavigation = [
@@ -215,6 +237,23 @@ function NavigationMenu({
 
 function UserAccount({ user }: { user: AuthUser }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // next-themes only knows the stored preference after it reads storage on the
+  // client, so keep the radio group unselected rather than flashing a wrong one.
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const activeTheme = mounted ? (theme ?? 'system') : ''
+  // The theme is a set-once preference, so it folds into a submenu that reports
+  // its current value rather than spending three rows of the account menu. The
+  // label takes flex-1 because SubmenuTrigger appends its own ml-auto chevron,
+  // and flexbox splits free space evenly between competing auto margins.
+  const activeThemeLabel = themeOptions.find(
+    (option) => option.value === activeTheme,
+  )?.label
 
   async function handleLogout() {
     if (isLoggingOut) {
@@ -231,55 +270,62 @@ function UserAccount({ user }: { user: AuthUser }) {
   }
 
   return (
-    <div className="flex h-12 min-w-0 items-center gap-2 rounded-lg bg-sidebar-accent/60 p-2 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-0!">
-      <div className="flex min-w-0 flex-1 items-center gap-2 group-data-[collapsible=icon]:justify-center">
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            aria-label={`Account menu for ${user.username}`}
+            className="flex h-12 w-full min-w-0 items-center gap-2 rounded-lg bg-sidebar-accent/60 p-2 text-left transition-colors hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-sidebar-ring/50 focus-visible:outline-none group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-0!"
+          />
+        }
+      >
         <Avatar className="rounded-lg" size="default">
           <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
             {getUserInitial(user.username)}
           </AvatarFallback>
         </Avatar>
-        <div className="grid min-w-0 flex-1 leading-tight group-data-[collapsible=icon]:hidden">
+        <span className="grid min-w-0 flex-1 leading-tight group-data-[collapsible=icon]:hidden">
           <span className="truncate text-sm font-medium">{user.username}</span>
           <span className="truncate text-xs text-sidebar-muted-foreground">
             {formatRole(user.role)}
           </span>
-        </div>
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        aria-label={`Log out ${user.username}`}
-        title="Log out"
-        disabled={isLoggingOut}
-        onClick={() => void handleLogout()}
-        className="text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
-      >
-        <LogOutIcon className={isLoggingOut ? 'animate-pulse' : undefined} />
-      </Button>
-    </div>
-  )
-}
-
-function getPageTitle(pathname: string): string {
-  if (pathname === '/providers/new') {
-    return 'Add provider'
-  }
-
-  if (pathname.startsWith('/providers/')) {
-    return 'Provider details'
-  }
-
-  if (pathname === '/users') {
-    return 'Users'
-  }
-
-  const navigation = [...primaryNavigation, ...administrationNavigation]
-  return (
-    navigation.find(
-      (item) =>
-        pathname === item.href || pathname.startsWith(`${item.href}/`),
-    )?.label ?? 'Provider'
+        </span>
+        <ChevronsUpDownIcon className="size-4 shrink-0 text-sidebar-muted-foreground group-data-[collapsible=icon]:hidden" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="top" align="start" className="w-56">
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <SunMoonIcon />
+            <span className="flex-1">Theme</span>
+            <span className="text-xs text-muted-foreground">
+              {activeThemeLabel}
+            </span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup
+              value={activeTheme}
+              onValueChange={(value) => setTheme(String(value))}
+            >
+              {themeOptions.map((option) => (
+                <DropdownMenuRadioItem key={option.value} value={option.value}>
+                  <option.icon />
+                  {option.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          disabled={isLoggingOut}
+          onClick={() => void handleLogout()}
+        >
+          <LogOutIcon />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
