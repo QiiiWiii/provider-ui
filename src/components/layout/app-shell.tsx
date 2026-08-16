@@ -8,7 +8,6 @@ import {
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 
-import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -80,21 +79,14 @@ export function AppShell() {
     <SidebarProvider>
       <AppSidebar user={authState.user} />
       <SidebarInset className="min-h-0 min-w-0 overflow-hidden bg-background">
-        <header className="z-20 flex h-16 shrink-0 items-center gap-3 border-b border-border/70 bg-card/85 px-4 backdrop-blur-xl sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="h-4" />
-            <span className="truncate text-sm font-medium text-muted-foreground">
-              {getPageTitle(location.pathname)}
-            </span>
-          </div>
-          <ThemeToggle className="ml-auto text-muted-foreground" />
+        <header className="z-20 flex h-14 shrink-0 items-center gap-3 border-b border-border/70 bg-card/85 px-4 backdrop-blur-xl sm:px-6 md:hidden">
+          <SidebarTrigger className="-ml-1" />
         </header>
         <div
           ref={scrollContainerRef}
           className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10"
         >
-          <div className="mx-auto flex w-full max-w-7xl flex-col pb-10">
+          <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col pb-10">
             <Outlet />
           </div>
         </div>

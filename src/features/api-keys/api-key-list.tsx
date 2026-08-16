@@ -415,7 +415,7 @@ function ApiKeyListError({
 
 function ApiKeyListEmpty() {
   return (
-    <Card className="min-h-80 justify-center">
+    <Card className="min-h-64 flex-1 justify-center">
       <Empty className="border-0">
         <EmptyHeader>
           <EmptyMedia variant="icon" className="size-10 rounded-xl">

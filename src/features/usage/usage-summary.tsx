@@ -57,7 +57,7 @@ function UsageStat({ label, value }: { label: string; value: string }) {
 
 function UsageEmpty() {
   return (
-    <Card className="min-h-80 justify-center">
+    <Card className="min-h-64 justify-center">
       <Empty className="border-0">
         <EmptyHeader>
           <EmptyMedia variant="icon" className="size-10 rounded-xl">
