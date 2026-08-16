@@ -1,34 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  ArrowLeftIcon,
   CircleAlertIcon,
   CircleCheckIcon,
   Clock3Icon,
   ExternalLinkIcon,
   Loader2Icon,
-  ShieldCheckIcon,
 } from 'lucide-react'
-import { Link, useNavigate, useSearchParams } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { cancelProviderOAuthSession } from '@/features/providers/provider-api'
+import { formatOAuthService } from '@/features/providers/provider-format'
 import {
-  formatOAuthService,
-  formatProviderKind,
-} from '@/features/providers/provider-format'
+  ProviderCreateBody,
+  ProviderCreateFooter,
+} from '@/features/providers/provider-create-shared'
 import {
   providerKeys,
   providerOAuthSessionQueryOptions,
@@ -42,18 +32,18 @@ import { formatUnixSeconds } from '@/lib/datetime'
 import { statusTextTone } from '@/lib/status-tone'
 import { cn } from '@/lib/utils'
 
-
 export function ProviderOAuthFlow({
   sessionId,
   provider,
+  onRestart,
 }: {
   sessionId: string
   provider?: OAuthProviderKind
+  onRestart: (provider?: OAuthProviderKind) => void
 }) {
   const navigate = useNavigate()
   const [startOverError, setStartOverError] = useState<unknown>(null)
   const [startingOver, setStartingOver] = useState(false)
-  const [, setSearchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const session = useQuery({
     ...providerOAuthSessionQueryOptions(sessionId),
@@ -87,12 +77,6 @@ export function ProviderOAuthFlow({
   }, [navigate, queryClient, session.data])
 
   const sessionProvider = session.data?.provider ?? provider
-  const providerName = sessionProvider
-    ? formatProviderKind(sessionProvider)
-    : 'Provider'
-  const serviceName = sessionProvider
-    ? formatOAuthService(sessionProvider)
-    : 'upstream'
 
   async function startOver() {
     setStartOverError(null)
@@ -115,129 +99,91 @@ export function ProviderOAuthFlow({
       }
     }
 
-    setSearchParams(
-      sessionProvider
-        ? { provider: sessionProvider, method: 'oauth' }
-        : {},
-      { replace: true },
-    )
+    onRestart(sessionProvider)
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6">
-      <div className="grid gap-4">
-        <Button
-          nativeButton={false}
-          variant="ghost"
-          size="sm"
-          className="-ml-2 w-fit text-muted-foreground"
-          render={<Link to="/providers" />}
-        >
-          <ArrowLeftIcon />
-          Back to providers
-        </Button>
-        <div className="grid gap-1.5">
-          <h2 className="text-xl font-semibold tracking-tight">
-            {providerName} authorization
-          </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Complete the {serviceName} device authorization flow to create this
-            Provider.
-          </p>
-        </div>
-      </div>
+    <>
+      <ProviderCreateBody>
+        {session.isPending ? <OAuthSessionLoading /> : null}
+        {session.isError ? (
+          <OAuthSessionError
+            error={session.error}
+            startOverError={startOverError}
+            startingOver={startingOver}
+            onRetry={() => void session.refetch()}
+            onStartOver={() => void startOver()}
+          />
+        ) : null}
+        {session.data ? (
+          <OAuthSessionStatus
+            session={session.data}
+            cancelError={cancelSession.error}
+          />
+        ) : null}
+      </ProviderCreateBody>
 
-      {session.isPending ? <OAuthSessionLoading /> : null}
-      {session.isError ? (
-        <OAuthSessionError
-          error={session.error}
-          startOverError={startOverError}
-          startingOver={startingOver}
-          onRetry={() => void session.refetch()}
-          onStartOver={() => void startOver()}
-        />
-      ) : null}
       {session.data ? (
-        <OAuthSessionCard
+        <OAuthSessionActions
           session={session.data}
           cancelling={cancelSession.isPending}
-          cancelError={cancelSession.error}
           onCancel={() => cancelSession.mutate()}
           onStartOver={() => void startOver()}
         />
       ) : null}
-    </section>
+    </>
   )
 }
 
-function OAuthSessionCard({
+function OAuthSessionStatus({
   session,
-  cancelling,
   cancelError,
-  onCancel,
-  onStartOver,
 }: {
   session: ProviderOAuthSession
-  cancelling: boolean
   cancelError: unknown
-  onCancel: () => void
-  onStartOver: () => void
 }) {
   if (session.status === 'failed' || session.status === 'cancelled') {
     return (
-      <Card>
-        <CardHeader>
-          <span className="mb-2 flex size-10 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
-            <CircleAlertIcon className="size-5" />
-          </span>
-          <CardTitle>
+      <div className="flex items-start gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+          <CircleAlertIcon className="size-4" />
+        </span>
+        <div className="grid gap-1">
+          <p className="font-medium">
             {session.status === 'failed'
               ? 'Authorization failed'
               : 'Authorization cancelled'}
-          </CardTitle>
-          <CardDescription>
-            No provider was created.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter className="justify-end">
-          <Button onClick={onStartOver}>Start again</Button>
-        </CardFooter>
-      </Card>
+          </p>
+          <p className="text-muted-foreground">No provider was created.</p>
+        </div>
+      </div>
     )
   }
 
   if (session.status === 'completed') {
     return (
-      <Card>
-        <CardContent className="flex items-center gap-3 py-4">
-          <CircleCheckIcon
-            className={cn('size-5', statusTextTone('success'))}
-          />
-          <div>
-            <p className="font-medium">Authorization completed</p>
-            <p className="text-sm text-muted-foreground">
-              Opening provider…
-            </p>
-          </div>
-          <Spinner className="ml-auto" />
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-3">
+        <CircleCheckIcon
+          className={cn('size-5 shrink-0', statusTextTone('success'))}
+        />
+        <div className="grid gap-1">
+          <p className="font-medium">Authorization completed</p>
+          <p className="text-muted-foreground">Opening provider…</p>
+        </div>
+        <Spinner className="ml-auto" />
+      </div>
     )
   }
 
   if (session.status === 'provisioning') {
     return (
-      <Card>
-        <CardContent className="flex items-center gap-3 py-4">
-          <Spinner className="size-5" />
-          <div>
-            <p className="font-medium">Creating Provider</p>
-            <p className="text-sm text-muted-foreground">
-              Finishing setup.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-3">
+        <Spinner className="size-5 shrink-0" />
+        <div className="grid gap-1">
+          <p className="font-medium">Creating Provider</p>
+          <p className="text-muted-foreground">Finishing setup.</p>
+        </div>
+      </div>
     )
   }
 
@@ -246,90 +192,89 @@ function OAuthSessionCard({
     session.challenge.verificationUri
 
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
-            <ShieldCheckIcon className="size-5" />
-          </span>
-          <Badge variant="outline" className="gap-1.5 bg-background">
-            <Loader2Icon className="animate-spin" />
-            Waiting for authorization
-          </Badge>
-        </div>
-        <CardTitle>{session.label}</CardTitle>
-        <CardDescription>
-          Open {formatOAuthService(session.provider)} and enter this code.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-5">
-        {cancelError ? (
-          <Alert variant="destructive">
-            <CircleAlertIcon />
-            <AlertTitle>Unable to cancel authorization</AlertTitle>
-            <AlertDescription>
-              Try again or wait for it to finish.
-            </AlertDescription>
-          </Alert>
-        ) : null}
+    <>
+      {cancelError ? (
+        <Alert variant="destructive">
+          <CircleAlertIcon />
+          <AlertTitle>Unable to cancel authorization</AlertTitle>
+          <AlertDescription>
+            Try again or wait for it to finish.
+          </AlertDescription>
+        </Alert>
+      ) : null}
 
-        <div className="grid gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            Authorization code
-          </span>
-          <code className="rounded-lg border bg-muted/50 px-4 py-4 text-center font-mono text-xl font-semibold tracking-[0.2em] text-foreground select-all">
-            {session.challenge.userCode}
-          </code>
-        </div>
-
-        <Button
-          size="lg"
-          render={
-            <a href={authorizationUrl} target="_blank" rel="noreferrer" />
-          }
-        >
-          Open {formatOAuthService(session.provider)} authorization
-          <ExternalLinkIcon />
-        </Button>
-
-        <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground">
-          <Clock3Icon className="size-4 shrink-0" />
-          <span>
-            Code expires {formatTimestamp(session.challenge.expiresAt)}
-          </span>
-        </div>
-      </CardContent>
-      <CardFooter className="justify-between gap-3">
-        <span className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Spinner className="size-3.5" />
-          Checking status
+      <div className="grid gap-2">
+        <span className="text-xs font-medium text-muted-foreground">
+          Open {formatOAuthService(session.provider)} and enter this code
         </span>
-        <Button
-          variant="outline"
-          onClick={onCancel}
-          disabled={cancelling}
-        >
-          {cancelling ? <Loader2Icon className="animate-spin" /> : null}
-          Cancel
-        </Button>
-      </CardFooter>
-    </Card>
+        <code className="rounded-lg border bg-muted/50 px-4 py-4 text-center font-mono text-xl font-semibold tracking-[0.2em] text-foreground select-all">
+          {session.challenge.userCode}
+        </code>
+      </div>
+
+      <Button
+        size="lg"
+        render={<a href={authorizationUrl} target="_blank" rel="noreferrer" />}
+      >
+        Open {formatOAuthService(session.provider)} authorization
+        <ExternalLinkIcon />
+      </Button>
+
+      <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2.5 text-muted-foreground">
+        <Clock3Icon className="size-4 shrink-0" />
+        <span>Code expires {formatTimestamp(session.challenge.expiresAt)}</span>
+      </div>
+    </>
+  )
+}
+
+// Provisioning and completed resolve on their own, so neither offers an
+// action: the dialog is only waiting for the next poll to move it along.
+function OAuthSessionActions({
+  session,
+  cancelling,
+  onCancel,
+  onStartOver,
+}: {
+  session: ProviderOAuthSession
+  cancelling: boolean
+  onCancel: () => void
+  onStartOver: () => void
+}) {
+  if (session.status === 'failed' || session.status === 'cancelled') {
+    return (
+      <ProviderCreateFooter>
+        <Button onClick={onStartOver}>Start again</Button>
+      </ProviderCreateFooter>
+    )
+  }
+
+  if (session.status !== 'pending') {
+    return null
+  }
+
+  return (
+    <ProviderCreateFooter className="sm:justify-between">
+      <span className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Spinner className="size-3.5" />
+        Checking status
+      </span>
+      <Button variant="outline" onClick={onCancel} disabled={cancelling}>
+        {cancelling ? <Loader2Icon className="animate-spin" /> : null}
+        Cancel
+      </Button>
+    </ProviderCreateFooter>
   )
 }
 
 function OAuthSessionLoading() {
   return (
-    <Card>
-      <CardHeader>
-        <Skeleton className="size-10" />
-        <Skeleton className="h-5 w-44" />
-        <Skeleton className="h-4 w-full max-w-md" />
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-9 w-full" />
-      </CardContent>
-    </Card>
+    <>
+      <Skeleton className="h-4 w-44" />
+      <Skeleton className="h-16 w-full" />
+      <Skeleton className="h-11 w-full" />
+      <Skeleton className="h-10 w-full" />
+    </>
   )
 }
 

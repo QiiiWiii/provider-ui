@@ -8,7 +8,6 @@ import {
   CircleOffIcon,
   KeyRoundIcon,
   LockKeyholeIcon,
-  PlusIcon,
   RefreshCwIcon,
   ServerIcon,
   Share2Icon,
@@ -38,6 +37,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { ProviderEditDialog } from '@/features/providers/provider-account-edit'
+import { ProviderCreateDialog } from '@/features/providers/provider-create'
 import { formatProviderKind } from '@/features/providers/provider-format'
 import { ProviderQuotaSummary } from '@/features/providers/provider-quota'
 import {
@@ -77,12 +77,7 @@ export function ProviderList({ currentUserId }: { currentUserId: string }) {
       <PageHeader
         title="Providers"
         description="Manage upstream accounts and models."
-        actions={
-          <Button nativeButton={false} render={<Link to="/providers/new" />}>
-            <PlusIcon />
-            Add provider
-          </Button>
-        }
+        actions={<ProviderCreateDialog />}
       />
 
       {content}

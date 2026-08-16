@@ -18,6 +18,9 @@ export const providerKeys = {
   health: () => ['providers', 'health'] as const,
   oauthSession: (sessionId: string) =>
     ['provider-oauth-session', sessionId] as const,
+  // A mutation key rather than a query key: the create dialog watches it to
+  // know a request is still in flight and refuses to close on top of one.
+  create: ['provider-create'] as const,
 }
 
 export const providersQueryOptions = queryOptions({
