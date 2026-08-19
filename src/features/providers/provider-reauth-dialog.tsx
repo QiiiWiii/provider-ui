@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  type DialogChangeEventDetails,
 } from '@/components/ui/dialog'
 import { startProviderReauth } from '@/features/providers/provider-api'
 import {
@@ -75,6 +76,30 @@ export function ProviderReauthDialog({ account }: { account: ProviderAccount }) 
     startReauth.mutate()
   }
 
+  function handleOpenChange(
+    nextOpen: boolean,
+    details: DialogChangeEventDetails,
+  ) {
+    if (nextOpen) {
+      setOpen(true)
+      return
+    }
+
+    // Escape is an accidental dismissal while the server-side OAuth session
+    // is still the only way back to the flow. The explicit close button can
+    // still dismiss it; the in-dialog Cancel action remains available for
+    // ending a pending session upstream.
+    if (sessionId && details.reason === 'escape-key') {
+      return
+    }
+
+    const next = new URLSearchParams(searchParams)
+    next.delete(reauthAccountParam)
+    next.delete(reauthSessionParam)
+    setSearchParams(next, { replace: true })
+    setOpen(false)
+  }
+
   return (
     <>
       <div className="grid gap-2">
@@ -103,7 +128,11 @@ export function ProviderReauthDialog({ account }: { account: ProviderAccount }) 
         ) : null}
       </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={handleOpenChange}
+        disablePointerDismissal
+      >
         <DialogContent className={reauthDialogClasses}>
           <DialogHeader>
             <DialogTitle>
