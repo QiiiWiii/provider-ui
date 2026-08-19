@@ -120,6 +120,7 @@ export function DashboardOverview() {
   }
 
   function selectTimeRange(next: TimeRangeSelection) {
+    rememberSharedTimeRangeSelection(next)
     patchParams((params) => {
       applyTimeRangeParams(params, next)
     })
