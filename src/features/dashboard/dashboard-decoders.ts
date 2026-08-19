@@ -3,11 +3,9 @@ import type {
   DashboardAccountCounts,
   DashboardAccountMetrics,
   DashboardFailureLayers,
-  DashboardModelMetrics,
   DashboardOverview,
   DashboardProviders,
   DashboardQuota,
-  DashboardQuotaSummary,
   DashboardSeries,
 } from './dashboard-types.ts'
 import {
@@ -21,16 +19,6 @@ import {
   requireTimestamp,
 } from '../../lib/api/decode.ts'
 
-const quotaSummaries = [
-  'ok',
-  'low',
-  'exhausted',
-  'unsupported',
-  'unavailable',
-  'unknown',
-] as const satisfies readonly DashboardQuotaSummary[]
-
-const visibilities = ['private', 'shared'] as const
 const authStates = ['active', 'reauth_required'] as const
 
 export function decodeDashboardOverview(value: unknown): DashboardOverview {
@@ -54,13 +42,8 @@ export function decodeDashboardOverview(value: unknown): DashboardOverview {
       record.ttft_p50_ms,
       'dashboard TTFT p50',
     ),
-    ttftP95Ms: nullableNonNegativeInteger(
-      record.ttft_p95_ms,
-      'dashboard TTFT p95',
-    ),
     accounts: decodeAccountCounts(record.accounts),
     failureLayers: decodeFailureLayers(record.failure_layers),
-    groups: decodeGroups(record.groups),
   }
 }
 
@@ -69,26 +52,16 @@ export function decodeDashboardProviders(value: unknown): DashboardProviders {
   const accounts = requireArray(record.accounts, 'dashboard provider accounts').map(
     (account, index) => decodeAccount(account, `dashboard account ${index + 1}`),
   )
-  const models = requireArray(record.models, 'dashboard models').map((model, index) =>
-    decodeModel(model, `dashboard model ${index + 1}`),
-  )
-
   return {
-    fromMs: requireTimestamp(record.from_ms, 'dashboard range start'),
-    toMs: requireTimestamp(record.to_ms, 'dashboard range end'),
     accounts,
     groups: decodeGroups(record.groups),
-    models,
     series: decodeSeries(record.series),
-    failureLayers: decodeFailureLayers(record.failure_layers),
   }
 }
 
 function decodeAccountCounts(value: unknown): DashboardAccountCounts {
   const record = requireRecord(value, 'dashboard account counts')
   return {
-    total: requireNonNegativeInteger(record.total, 'dashboard account total'),
-    enabled: requireNonNegativeInteger(record.enabled, 'dashboard enabled accounts'),
     active: requireNonNegativeInteger(record.active, 'dashboard active accounts'),
     reauthRequired: requireNonNegativeInteger(
       record.reauth_required,
@@ -161,7 +134,6 @@ function decodeAccount(value: unknown, label: string): DashboardAccountMetrics {
     provider: requireEnum(record.provider, providerKinds, `${label} provider`),
     label: requireNonEmptyString(record.label, `${label} label`),
     groupLabel: requireNonEmptyString(record.group_label, `${label} group`),
-    visibility: requireEnum(record.visibility, visibilities, `${label} visibility`),
     enabled: requireBoolean(record.enabled, `${label} enabled state`),
     authState: requireEnum(record.auth_state, authStates, `${label} auth state`),
     requests: requireNonNegativeInteger(record.requests, `${label} requests`),
@@ -169,32 +141,11 @@ function decodeAccount(value: unknown, label: string): DashboardAccountMetrics {
     failures: requireNonNegativeInteger(record.failures, `${label} failures`),
     successRate: nullableRate(record.success_rate, `${label} success rate`),
     ttftP50Ms: nullableNonNegativeInteger(record.ttft_p50_ms, `${label} TTFT p50`),
-    ttftP95Ms: nullableNonNegativeInteger(record.ttft_p95_ms, `${label} TTFT p95`),
     durationP95Ms: nullableNonNegativeInteger(
       record.duration_p95_ms,
       `${label} duration p95`,
     ),
     quota: decodeQuota(record.quota, `${label} quota`),
-  }
-}
-
-function decodeModel(value: unknown, label: string): DashboardModelMetrics {
-  const record = requireRecord(value, label)
-  const tokens = requireRecord(record.tokens, `${label} tokens`)
-  return {
-    model: requireNonEmptyString(record.model, `${label} name`),
-    requests: requireNonNegativeInteger(record.requests, `${label} requests`),
-    successes: requireNonNegativeInteger(record.successes, `${label} successes`),
-    failures: requireNonNegativeInteger(record.failures, `${label} failures`),
-    successRate: nullableRate(record.success_rate, `${label} success rate`),
-    tokens: {
-      effectiveInput: requireNonNegativeInteger(
-        tokens.effective_input,
-        `${label} effective input tokens`,
-      ),
-      output: requireNonNegativeInteger(tokens.output, `${label} output tokens`),
-    },
-    ttftP50Ms: nullableNonNegativeInteger(record.ttft_p50_ms, `${label} TTFT p50`),
   }
 }
 
@@ -226,15 +177,10 @@ function decodeSeries(value: unknown): DashboardSeries {
 function decodeQuota(value: unknown, label: string): DashboardQuota {
   const record = requireRecord(value, label)
   return {
-    summary: requireEnum(record.summary, quotaSummaries, `${label} summary`),
     tightestRemainingPercent: nullableNumber(
       record.tightest_remaining_percent,
       `${label} remaining percent`,
     ),
-    fetchedAtMs:
-      record.fetched_at_ms == null
-        ? null
-        : requireTimestamp(record.fetched_at_ms, `${label} fetched time`),
   }
 }
 

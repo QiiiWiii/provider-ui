@@ -56,11 +56,9 @@ import {
 import {
   applyTimeRangeParams,
   currentTimeRange,
-  hasTimeRangeParams,
-  parseTimeRangeSelection,
-  timeRangeSelectionLabel,
-  readSharedTimeRangeSelection,
   rememberSharedTimeRangeSelection,
+  resolveTimeRangeSelection,
+  timeRangeSelectionLabel,
   type TimeRangeSelection,
 } from '@/features/time-range/time-range'
 import type {
@@ -97,13 +95,9 @@ const trendChartConfig = {
 export function DashboardOverview() {
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamsKey = searchParams.toString()
-  const hasExplicitTimeRange = hasTimeRangeParams(searchParams)
   const timeRange = useMemo(
-    () => {
-      const parsed = parseTimeRangeSelection(new URLSearchParams(searchParamsKey))
-      return hasExplicitTimeRange ? parsed : readSharedTimeRangeSelection() ?? parsed
-    },
-    [hasExplicitTimeRange, searchParamsKey],
+    () => resolveTimeRangeSelection(new URLSearchParams(searchParamsKey)),
+    [searchParamsKey],
   )
   const group = searchParams.get('group')?.trim() || null
   const [rangeRevision, setRangeRevision] = useState(0)
@@ -126,7 +120,6 @@ export function DashboardOverview() {
   }
 
   function selectTimeRange(next: TimeRangeSelection) {
-    rememberSharedTimeRangeSelection(next)
     patchParams((params) => {
       applyTimeRangeParams(params, next)
     })
@@ -149,7 +142,6 @@ export function DashboardOverview() {
     }
   }
 
-  const rangeData = overview.data ?? providers.data
   const groups = providers.data?.groups ?? []
 
   return (
@@ -157,8 +149,8 @@ export function DashboardOverview() {
       <PageHeader
         title="Dashboard"
         description={
-          rangeData
-            ? `${timeRangeSelectionLabel(timeRange)} · ${formatUnixMs(rangeData.fromMs)} – ${formatUnixMs(rangeData.toMs)}`
+          overview.data
+            ? `${timeRangeSelectionLabel(timeRange)} · ${formatUnixMs(overview.data.fromMs)} – ${formatUnixMs(overview.data.toMs)}`
             : 'Provider fleet health across the selected window.'
         }
         actions={
@@ -554,10 +546,7 @@ function DashboardIssues({ layers }: { layers: DashboardFailureLayers }) {
 function QuotaCell({ quota }: { quota: DashboardQuota }) {
   const percent = quota.tightestRemainingPercent
   return (
-    <span
-      className="text-xs font-medium tabular-nums text-muted-foreground"
-      title={quota.fetchedAtMs ? `Updated ${formatUnixMs(quota.fetchedAtMs)}` : undefined}
-    >
+    <span className="text-xs font-medium tabular-nums text-muted-foreground">
       {percent === null ? '—' : formatPercentNumber(percent)}
     </span>
   )

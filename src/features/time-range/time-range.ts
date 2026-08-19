@@ -56,11 +56,18 @@ export function parseTimeRangeSelection(
   return defaultTimeRangeSelection
 }
 
-export function hasTimeRangeParams(params: URLSearchParams): boolean {
+export function resolveTimeRangeSelection(
+  params: URLSearchParams,
+): TimeRangeSelection {
+  const parsed = parseTimeRangeSelection(params)
+  return hasTimeRangeParams(params) ? parsed : readSharedTimeRangeSelection() ?? parsed
+}
+
+function hasTimeRangeParams(params: URLSearchParams): boolean {
   return params.has('window') || params.has('from_ms') || params.has('to_ms')
 }
 
-export function readSharedTimeRangeSelection(): TimeRangeSelection | null {
+function readSharedTimeRangeSelection(): TimeRangeSelection | null {
   if (typeof window === 'undefined') {
     return null
   }

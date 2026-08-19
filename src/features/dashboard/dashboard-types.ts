@@ -1,20 +1,10 @@
-export type DashboardQuotaSummary =
-  | 'ok'
-  | 'low'
-  | 'exhausted'
-  | 'unsupported'
-  | 'unavailable'
-  | 'unknown'
-
 export type DashboardRange = {
   fromMs: number
   toMs: number
 }
 
 export type DashboardQuota = {
-  summary: DashboardQuotaSummary
   tightestRemainingPercent: number | null
-  fetchedAtMs: number | null
 }
 
 export type DashboardAccountMetrics = {
@@ -22,7 +12,6 @@ export type DashboardAccountMetrics = {
   provider: ProviderKind
   label: string
   groupLabel: string
-  visibility: 'private' | 'shared'
   enabled: boolean
   authState: 'active' | 'reauth_required'
   requests: number
@@ -30,22 +19,8 @@ export type DashboardAccountMetrics = {
   failures: number
   successRate: number | null
   ttftP50Ms: number | null
-  ttftP95Ms: number | null
   durationP95Ms: number | null
   quota: DashboardQuota
-}
-
-export type DashboardModelMetrics = {
-  model: string
-  requests: number
-  successes: number
-  failures: number
-  successRate: number | null
-  tokens: {
-    effectiveInput: number
-    output: number
-  }
-  ttftP50Ms: number | null
 }
 
 export type DashboardSeries = {
@@ -61,8 +36,6 @@ export type DashboardFailureLayers = {
 }
 
 export type DashboardAccountCounts = {
-  total: number
-  enabled: number
   active: number
   reauthRequired: number
   disabled: number
@@ -90,19 +63,13 @@ export type DashboardOverview = {
   costUsd: string | null
   avgResponseMs: number | null
   ttftP50Ms: number | null
-  ttftP95Ms: number | null
   accounts: DashboardAccountCounts
   failureLayers: DashboardFailureLayers
-  groups: string[]
 }
 
 export type DashboardProviders = {
-  fromMs: number
-  toMs: number
   accounts: DashboardAccountMetrics[]
   groups: string[]
-  models: DashboardModelMetrics[]
   series: DashboardSeries
-  failureLayers: DashboardFailureLayers
 }
 import type { ProviderKind } from '../providers/provider-types.ts'

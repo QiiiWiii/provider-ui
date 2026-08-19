@@ -29,23 +29,17 @@ import {
 import {
   applyTimeRangeParams,
   currentTimeRange,
-  hasTimeRangeParams,
-  parseTimeRangeSelection,
-  readSharedTimeRangeSelection,
   rememberSharedTimeRangeSelection,
+  resolveTimeRangeSelection,
   type TimeRangeSelection,
 } from '@/features/time-range/time-range'
 
 export function UsageOverview() {
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamsKey = searchParams.toString()
-  const hasExplicitTimeRange = hasTimeRangeParams(searchParams)
   const timeRange = useMemo(
-    () => {
-      const parsed = parseTimeRangeSelection(new URLSearchParams(searchParamsKey))
-      return hasExplicitTimeRange ? parsed : readSharedTimeRangeSelection() ?? parsed
-    },
-    [hasExplicitTimeRange, searchParamsKey],
+    () => resolveTimeRangeSelection(new URLSearchParams(searchParamsKey)),
+    [searchParamsKey],
   )
   const apiKeyId = searchParams.get('key')
   const modelFilter = searchParams.get('model') ?? ''
@@ -90,7 +84,6 @@ export function UsageOverview() {
   }
 
   function selectTimeRange(next: TimeRangeSelection) {
-    rememberSharedTimeRangeSelection(next)
     patchParams((params) => {
       applyTimeRangeParams(params, next)
     })
@@ -209,13 +202,10 @@ export function UsageOverview() {
                 setRangeRevision((current) => current + 1)
                 if (timeRange.kind === 'custom') {
                   void Promise.all([
-                    apiKeys.refetch(),
                     filterOptions.refetch(),
                     overview.refetch(),
                     requests.refetch(),
                   ])
-                } else {
-                  void apiKeys.refetch()
                 }
               }}
             >

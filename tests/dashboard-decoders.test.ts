@@ -29,10 +29,7 @@ function overviewPayload() {
     cost: { usd: '1.25000000000000' },
     avg_response_ms: 480,
     ttft_p50_ms: 120,
-    ttft_p95_ms: null,
     accounts: {
-      total: 2,
-      enabled: 1,
       active: 1,
       reauth_required: 0,
       disabled: 1,
@@ -41,30 +38,25 @@ function overviewPayload() {
       upstream_failed_requests: 1,
       zero_dispatch_logical_failures: 2,
     },
-    groups: ['codex'],
   }
 }
 
-test('dashboard decoders preserve null KPI values and quota states', () => {
+test('dashboard decoders preserve null KPI values and quota percentages', () => {
   const overview = decodeDashboardOverview(overviewPayload())
   assert.equal(overview.successRate, 0.75)
   assert.equal(overview.tokens.total, 150)
   assert.equal(overview.totalTokens.total, 300)
   assert.equal(overview.costUsd, '1.25000000000000')
   assert.equal(overview.avgResponseMs, 480)
-  assert.equal(overview.ttftP95Ms, null)
   assert.equal(overview.failureLayers.zeroDispatchLogicalFailures, 2)
 
   const providers = decodeDashboardProviders({
-    from_ms: overviewPayload().from_ms,
-    to_ms: overviewPayload().to_ms,
     accounts: [
       {
         account_id: 'account-1',
         provider: 'codex',
         label: 'Codex',
         group_label: 'codex',
-        visibility: 'shared',
         enabled: true,
         auth_state: 'active',
         requests: 4,
@@ -72,38 +64,22 @@ test('dashboard decoders preserve null KPI values and quota states', () => {
         failures: 1,
         success_rate: 0.75,
         ttft_p50_ms: 120,
-        ttft_p95_ms: 220,
         duration_p95_ms: 900,
         quota: {
-          summary: 'low',
           tightest_remaining_percent: 18,
-          fetched_at_ms: 1_700_000_000_000,
         },
       },
     ],
     groups: ['codex'],
-    models: [
-      {
-        model: 'gpt-5-codex',
-        requests: 4,
-        successes: 3,
-        failures: 1,
-        success_rate: 0.75,
-        ttft_p50_ms: 120,
-        tokens: { effective_input: 100, output: 50 },
-      },
-    ],
     series: {
       bucket_ms: 3_600_000,
       buckets: [1_700_000_000_000],
       requests: [4],
       failures: [1],
     },
-    failure_layers: overviewPayload().failure_layers,
   })
 
-  assert.equal(providers.accounts[0]?.quota.summary, 'low')
-  assert.equal(providers.models[0]?.tokens.output, 50)
+  assert.equal(providers.accounts[0]?.quota.tightestRemainingPercent, 18)
   assert.deepEqual(providers.series.failures, [1])
 })
 
@@ -111,10 +87,7 @@ test('dashboard decoders reject a malformed hourly series', () => {
   assert.throws(
     () =>
       decodeDashboardProviders({
-        from_ms: 1_700_000_000_000,
-        to_ms: 1_700_086_400_000,
         accounts: [],
-        models: [],
         groups: [],
         series: {
           bucket_ms: 3_600_000,
