@@ -3,6 +3,7 @@ export type ProviderKind =
   | 'codex'
   | 'openai_compatible'
   | 'anthropic_compatible'
+  | 'claude_oauth'
 
 export type ProviderVisibility = 'private' | 'shared'
 
@@ -184,7 +185,10 @@ export type CreatedProviderAccount = {
   models: ProviderModelCatalogSnapshot
 }
 
-export type OAuthProviderKind = Extract<ProviderKind, 'grok' | 'codex'>
+export type OAuthProviderKind = Extract<
+  ProviderKind,
+  'grok' | 'codex' | 'claude_oauth'
+>
 
 export type CompatibleProviderKind = Exclude<ProviderKind, OAuthProviderKind>
 

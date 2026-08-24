@@ -62,6 +62,12 @@ const providerOptions = [
     description: 'Anthropic Messages endpoint.',
     icon: CloudCogIcon,
   },
+  {
+    value: 'claude_oauth',
+    title: 'Claude OAuth',
+    description: 'Claude subscription via OAuth or JSON, restricted to Claude Code clients.',
+    icon: KeyRoundIcon,
+  },
 ] as const satisfies ReadonlyArray<{
   value: ProviderKind
   title: string
@@ -162,7 +168,7 @@ function CreateStepContent({ step }: { step: CreateStep }) {
       <>
         <StepHeader
           title={`${oauthProvider ? formatProviderKind(oauthProvider) : 'Provider'} authorization`}
-          description={`Complete the ${oauthProvider ? formatOAuthService(oauthProvider) : 'upstream'} device authorization flow.`}
+          description={`Complete the ${oauthProvider ? formatOAuthService(oauthProvider) : 'upstream'} authorization flow.`}
         />
         <ProviderOAuthFlow
           sessionId={oauthSessionId}
@@ -212,7 +218,11 @@ function CreateStepContent({ step }: { step: CreateStep }) {
             <SelectionCard
               to={stepSearch({ provider, method: 'oauth' })}
               title="Connect with OAuth"
-              description={`${formatOAuthService(provider)} device authorization.`}
+              description={
+                provider === 'claude_oauth'
+                  ? 'Browser authorization with PKCE.'
+                  : `${formatOAuthService(provider)} device authorization.`
+              }
               icon={KeyRoundIcon}
               recommended
             />

@@ -77,6 +77,23 @@ test('provider creation payloads include priority', () => {
 
   assert.deepEqual(
     startProviderOAuthBody({
+      provider: 'claude_oauth',
+      label: 'Claude OAuth',
+      groupLabel: 'claude',
+      priority: 9,
+      visibility: 'private',
+    }),
+    {
+      provider: 'claude_oauth',
+      label: 'Claude OAuth',
+      group_label: 'claude',
+      priority: 9,
+      visibility: 'private',
+    },
+  )
+
+  assert.deepEqual(
+    startProviderOAuthBody({
       provider: 'grok',
       label: 'Grok OAuth',
       groupLabel: 'default',
@@ -88,6 +105,26 @@ test('provider creation payloads include priority', () => {
       label: 'Grok OAuth',
       group_label: 'default',
       priority: 3,
+      visibility: 'private',
+    },
+  )
+
+  assert.deepEqual(
+    importOAuthProviderBody({
+      provider: 'claude_oauth',
+      label: 'Claude OAuth import',
+      groupLabel: 'claude',
+      priority: 9,
+      visibility: 'private',
+      credentialJson: { type: 'claude' },
+    }),
+    {
+      method: 'credential_json',
+      provider: 'claude_oauth',
+      label: 'Claude OAuth import',
+      group_label: 'claude',
+      priority: 9,
+      credential_json: { type: 'claude' },
       visibility: 'private',
     },
   )

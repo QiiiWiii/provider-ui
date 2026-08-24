@@ -11,9 +11,13 @@ import { useNavigate } from 'react-router'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
-import { cancelProviderOAuthSession } from '@/features/providers/provider-api'
+import {
+  cancelProviderOAuthSession,
+  submitProviderOAuthCallback,
+} from '@/features/providers/provider-api'
 import { formatOAuthService } from '@/features/providers/provider-format'
 import {
   ProviderCreateBody,
@@ -160,6 +164,14 @@ function OAuthSessionStatus({
   cancelError: unknown
   mode: 'create' | 'reauth'
 }) {
+  const [callbackUrl, setCallbackUrl] = useState('')
+  const queryClient = useQueryClient()
+  const submitCallback = useMutation({
+    mutationFn: () => submitProviderOAuthCallback(session.id, callbackUrl),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(providerKeys.oauthSession(session.id), updated)
+    },
+  })
   const reauthenticating = mode === 'reauth'
 
   if (session.status === 'failed' || session.status === 'cancelled') {
@@ -231,14 +243,16 @@ function OAuthSessionStatus({
         </Alert>
       ) : null}
 
-      <div className="grid gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          Open {formatOAuthService(session.provider)} and enter this code
-        </span>
-        <code className="rounded-lg border bg-muted/50 px-4 py-4 text-center font-mono text-xl font-semibold tracking-[0.2em] text-foreground select-all">
-          {session.challenge.userCode}
-        </code>
-      </div>
+      {session.challenge.userCode ? (
+        <div className="grid gap-2">
+          <span className="text-xs font-medium text-muted-foreground">
+            Open {formatOAuthService(session.provider)} and enter this code
+          </span>
+          <code className="rounded-lg border bg-muted/50 px-4 py-4 text-center font-mono text-xl font-semibold tracking-[0.2em] text-foreground select-all">
+            {session.challenge.userCode}
+          </code>
+        </div>
+      ) : null}
 
       <Button
         size="lg"
@@ -247,6 +261,50 @@ function OAuthSessionStatus({
         Open {formatOAuthService(session.provider)} authorization
         <ExternalLinkIcon />
       </Button>
+
+      {session.provider === 'claude_oauth' ? (
+        <form
+          className="grid gap-2 rounded-lg border p-3"
+          onSubmit={(event) => {
+            event.preventDefault()
+            submitCallback.mutate()
+          }}
+        >
+          <label
+            htmlFor="claude-oauth-callback-url"
+            className="text-xs font-medium text-muted-foreground"
+          >
+            If the browser cannot open the localhost callback, paste the full
+            callback URL here
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              id="claude-oauth-callback-url"
+              type="url"
+              required
+              value={callbackUrl}
+              placeholder="http://localhost:54545/callback?code=…&state=…"
+              onChange={(event) => setCallbackUrl(event.target.value)}
+            />
+            <Button
+              type="submit"
+              className="shrink-0"
+              disabled={submitCallback.isPending}
+            >
+              {submitCallback.isPending ? (
+                <Loader2Icon className="animate-spin" />
+              ) : null}
+              Submit callback
+            </Button>
+          </div>
+          {submitCallback.isError ? (
+            <p className="text-sm text-destructive">
+              The callback URL was rejected. Copy the complete URL from the
+              browser and try again.
+            </p>
+          ) : null}
+        </form>
+      ) : null}
 
       <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2.5 text-muted-foreground">
         <Clock3Icon className="size-4 shrink-0" />
