@@ -23,11 +23,13 @@ import {
 } from '@/features/providers/provider-quota-content'
 import {
   clampPercentage,
+  findPrimaryBalance,
   findPrimaryUsage,
   formatPercent,
   percentageRemaining,
   percentageUsed,
 } from '@/features/providers/provider-quota-metrics'
+import { quotaMetricDisplay } from '@/features/providers/provider-quota-format'
 import {
   syncProviderListQuota,
   syncQuotaCache,
@@ -48,6 +50,7 @@ export function ProviderQuotaSummary({
     onSuccess: (nextQuota) => syncQuotaCache(queryClient, accountId, nextQuota),
   })
   const usage = findPrimaryUsage(quota)
+  const balance = findPrimaryBalance(quota)
 
   if (quota.support === 'unsupported') {
     return <span className="text-sm text-muted-foreground">Not reported</span>
@@ -87,6 +90,18 @@ export function ProviderQuotaSummary({
   }
 
   if (!usage) {
+    if (balance) {
+      const display = quotaMetricDisplay(balance.metric)
+      return (
+        <div className="grid gap-1">
+          <span className="text-sm font-medium tabular-nums">
+            {display.primary}
+          </span>
+          <ProviderQuotaFreshness quota={quota} compact />
+        </div>
+      )
+    }
+
     return (
       <div className="grid gap-1">
         <span className="text-sm font-medium">Quota available</span>

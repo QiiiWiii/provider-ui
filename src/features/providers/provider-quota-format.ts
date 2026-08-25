@@ -112,7 +112,13 @@ export function quotaMetricLabel(
     primary: 'Primary limit',
     secondary: 'Secondary limit',
     credits: 'Credit balance',
+    gemini: 'Gemini',
+    claude_gpt: 'Claude + GPT',
     reset_credits: 'Reset credits',
+    gemini_session: 'Gemini Session',
+    gemini_weekly: 'Gemini Weekly',
+    claude_gpt_session: 'Claude + GPT Session',
+    claude_gpt_weekly: 'Claude + GPT Weekly',
   }
 
   return (
