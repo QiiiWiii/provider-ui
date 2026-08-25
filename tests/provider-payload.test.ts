@@ -76,6 +76,26 @@ test('provider creation payloads include priority', () => {
   )
 
   assert.deepEqual(
+    importOAuthProviderBody({
+      provider: 'antigravity',
+      label: 'Antigravity import',
+      groupLabel: 'google',
+      priority: 9,
+      visibility: 'private',
+      credentialJson: { type: 'antigravity' },
+    }),
+    {
+      method: 'credential_json',
+      provider: 'antigravity',
+      label: 'Antigravity import',
+      group_label: 'google',
+      priority: 9,
+      credential_json: { type: 'antigravity' },
+      visibility: 'private',
+    },
+  )
+
+  assert.deepEqual(
     startProviderOAuthBody({
       provider: 'grok',
       label: 'Grok OAuth',
@@ -89,6 +109,23 @@ test('provider creation payloads include priority', () => {
       group_label: 'default',
       priority: 3,
       visibility: 'private',
+    },
+  )
+
+  assert.deepEqual(
+    startProviderOAuthBody({
+      provider: 'antigravity',
+      label: 'Antigravity OAuth',
+      groupLabel: 'google',
+      priority: 4,
+      visibility: 'shared',
+    }),
+    {
+      provider: 'antigravity',
+      label: 'Antigravity OAuth',
+      group_label: 'google',
+      priority: 4,
+      visibility: 'shared',
     },
   )
 })

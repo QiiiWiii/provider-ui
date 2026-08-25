@@ -1,6 +1,7 @@
 export type ProviderKind =
   | 'grok'
   | 'codex'
+  | 'antigravity'
   | 'openai_compatible'
   | 'anthropic_compatible'
 
@@ -184,7 +185,10 @@ export type CreatedProviderAccount = {
   models: ProviderModelCatalogSnapshot
 }
 
-export type OAuthProviderKind = Extract<ProviderKind, 'grok' | 'codex'>
+export type OAuthProviderKind = Extract<
+  ProviderKind,
+  'grok' | 'codex' | 'antigravity'
+>
 
 export type CompatibleProviderKind = Exclude<ProviderKind, OAuthProviderKind>
 

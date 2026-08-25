@@ -153,6 +153,21 @@ export function cancelProviderOAuthSession(
   )
 }
 
+export function submitProviderOAuthCallback(
+  sessionId: string,
+  callbackUrl: string,
+): Promise<ProviderOAuthSession> {
+  return requestAuthenticatedData(
+    `${oauthSessionEndpoint(sessionId)}/callback`,
+    decodeProviderOAuthSession,
+    {
+      method: 'POST',
+      headers: jsonHeaders,
+      body: JSON.stringify({ callback_url: callbackUrl }),
+    },
+  )
+}
+
 export function updateProviderAccount(
   input: UpdateProviderAccountInput,
 ): Promise<ProviderAccount> {

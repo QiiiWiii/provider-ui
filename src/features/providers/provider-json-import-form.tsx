@@ -133,6 +133,8 @@ export function ProviderJsonImportForm({
           placeholder={
             provider === 'grok'
               ? '{\n  "type": "xai",\n  ...\n}'
+              : provider === 'antigravity'
+                ? '{\n  "type": "antigravity",\n  ...\n}'
               : '{\n  "type": "codex",\n  "auth_kind": "oauth",\n  ...\n}'
           }
           disabled={importProvider.isPending}
