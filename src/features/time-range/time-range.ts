@@ -107,9 +107,7 @@ export function applyTimeRangeParams(
   params.delete('window')
 
   if (selection.kind === 'preset') {
-    if (selection.preset !== '5h') {
-      params.set('window', selection.preset)
-    }
+    params.set('window', selection.preset)
     return
   }
 
