@@ -1,5 +1,6 @@
 import type {
   UsageCacheTotals,
+  UsageClientType,
   UsageCostTotals,
   UsageFilterOptions,
   UsageEndpoint,
@@ -184,6 +185,11 @@ function decodeRequestSummary(value: unknown, label: string): UsageRequestSummar
             record.api_key_group_label,
             `${label} api key group`,
           ),
+    userAgent:
+      record.user_agent == null
+        ? null
+        : requireNonEmptyString(record.user_agent, `${label} user agent`),
+    clientType: decodeUsageClientType(record.client_type, `${label} client type`),
     clientModel:
       record.client_model == null
         ? null
@@ -209,6 +215,12 @@ const usageRequestStatuses = [
   'canceled',
   'incomplete',
 ] as const satisfies readonly UsageRequestStatus[]
+
+const usageClientTypes = ['unknown', 'claude_code'] as const satisfies readonly UsageClientType[]
+
+function decodeUsageClientType(value: unknown, label: string): UsageClientType {
+  return requireEnum(value, usageClientTypes, label)
+}
 
 function decodeUsageRequestStatus(
   value: unknown,

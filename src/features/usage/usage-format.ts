@@ -1,5 +1,6 @@
 import type {
   UsageCacheTotals,
+  UsageClientType,
   UsageEndpoint,
   UsageRequestStatus,
 } from './usage-types.ts'
@@ -55,6 +56,28 @@ export function formatUsageEndpoint(endpoint: UsageEndpoint | null): string {
     case null:
       return '—'
   }
+}
+
+export function formatUsageClientType(
+  clientType: UsageClientType,
+  userAgent: string | null,
+): string {
+  if (clientType !== 'claude_code') {
+    return 'Unknown client'
+  }
+
+  if (userAgent?.includes('(external, claude-vscode')) {
+    return 'Claude Code app'
+  }
+
+  if (
+    userAgent?.includes('(external, cli') ||
+    userAgent?.includes('(external, sdk-cli')
+  ) {
+    return 'Claude Code CLI'
+  }
+
+  return 'Claude Code'
 }
 
 export function formatUsageRequestStatus(status: UsageRequestStatus): string {

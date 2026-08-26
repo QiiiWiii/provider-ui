@@ -135,6 +135,8 @@ export function ProviderJsonImportForm({
               ? '{\n  "type": "xai",\n  ...\n}'
               : provider === 'antigravity'
                 ? '{\n  "type": "antigravity",\n  ...\n}'
+              : provider === 'claude_oauth'
+                ? '{\n  "type": "claude",\n  "access_token": "...",\n  ...\n}'
               : '{\n  "type": "codex",\n  "auth_kind": "oauth",\n  ...\n}'
           }
           disabled={importProvider.isPending}

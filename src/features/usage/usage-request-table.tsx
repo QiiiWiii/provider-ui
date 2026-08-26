@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import {
+  formatUsageClientType,
   formatUsageDateTime,
   formatUsageEndpoint,
   formatUsageRequestStatus,
@@ -39,6 +40,8 @@ export function UsageRequestsTable({
         <TableHeader>
           <TableRow>
             <TableHead className="pl-4">API Key</TableHead>
+            <TableHead>Client</TableHead>
+            <TableHead>User agent</TableHead>
             <TableHead>Model</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Endpoint</TableHead>
@@ -57,6 +60,18 @@ export function UsageRequestsTable({
               <TableRow key={item.requestId}>
                 <TableCell className="max-w-36 truncate pl-4 font-medium">
                   {meta.name}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {formatUsageClientType(item.clientType, item.userAgent)}
+                </TableCell>
+                <TableCell className="max-w-56 truncate text-muted-foreground">
+                  {item.userAgent ? (
+                    <code className="font-mono text-xs" title={item.userAgent}>
+                      {item.userAgent}
+                    </code>
+                  ) : (
+                    '—'
+                  )}
                 </TableCell>
                 <TableCell className="max-w-44 truncate font-mono text-xs">
                   {item.clientModel ?? '—'}

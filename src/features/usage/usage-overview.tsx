@@ -138,7 +138,7 @@ export function UsageOverview() {
     <UsageSummary overview={overview.data} />
   )
   const requestContent = requests.isPending ? (
-    <UsageTableSkeleton rows={6} cols={10} />
+    <UsageTableSkeleton rows={6} cols={12} />
   ) : requests.isError ? (
     <UsageInlineError
       busy={requests.isFetching}

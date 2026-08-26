@@ -7,6 +7,10 @@ test('Antigravity browser OAuth accepts an empty user code', () => {
   assert.equal(decodeOAuthUserCode('', 'antigravity'), '')
 })
 
+test('Claude OAuth authorization accepts a browser-only challenge', () => {
+  assert.equal(decodeOAuthUserCode('', 'claude_oauth'), '')
+})
+
 test('device OAuth providers still require a user code', () => {
   assert.throws(
     () => decodeOAuthUserCode('', 'codex'),

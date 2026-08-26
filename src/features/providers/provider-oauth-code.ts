@@ -4,7 +4,7 @@ export function decodeOAuthUserCode(
   value: unknown,
   provider: OAuthProviderKind,
 ): string {
-  if (provider === 'antigravity') {
+  if (provider === 'antigravity' || provider === 'claude_oauth') {
     if (typeof value !== 'string') {
       throw new TypeError('OAuth user code must be a string')
     }

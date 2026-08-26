@@ -41,6 +41,8 @@ export type UsageRequestStatus =
   | 'canceled'
   | 'incomplete'
 
+export type UsageClientType = 'unknown' | 'claude_code'
+
 export type UsageRequestSummary = {
   requestId: string
   status: UsageRequestStatus
@@ -48,6 +50,8 @@ export type UsageRequestSummary = {
   apiKeyId: string | null
   apiKeyLabel: string | null
   apiKeyGroupLabel: string | null
+  userAgent: string | null
+  clientType: UsageClientType
   clientModel: string | null
   reasoningEffort: string | null
   startedAtMs: number

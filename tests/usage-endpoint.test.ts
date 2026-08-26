@@ -3,6 +3,7 @@ import test from 'node:test'
 
 import { decodeUsageRequests } from '../src/features/usage/usage-decoders.ts'
 import {
+  formatUsageClientType,
   formatUsageEndpoint,
   formatUsageRequestStatus,
 } from '../src/features/usage/usage-format.ts'
@@ -44,6 +45,8 @@ test('usage request status is required and formatted', () => {
   const decoded = decodeUsageRequests(usageRequestsPayload('openai_responses'))
   assert.equal(decoded.total, 1)
   assert.equal(decoded.requests[0]?.status, 'succeeded')
+  assert.equal(decoded.requests[0]?.clientType, 'unknown')
+  assert.equal(decoded.requests[0]?.userAgent, null)
   assert.equal(formatUsageRequestStatus('succeeded'), 'Succeeded')
 
   const payload = usageRequestsPayload('openai_responses')
@@ -52,7 +55,30 @@ test('usage request status is required and formatted', () => {
   assert.throws(() => decodeUsageRequests(payload), /usage request 1 status is unsupported/)
 })
 
-function usageRequestsPayload(endpoint: unknown) {
+test('usage client types identify Claude Code app and CLI requests', () => {
+  const decoded = decodeUsageRequests(
+    usageRequestsPayload('claude_messages', true),
+  )
+  assert.equal(decoded.requests[0]?.clientType, 'claude_code')
+  assert.equal(decoded.requests[0]?.userAgent, 'claude-cli/2.1.220 (external, cli)')
+  assert.equal(
+    formatUsageClientType(
+      'claude_code',
+      'claude-cli/2.1.220 (external, cli)',
+    ),
+    'Claude Code CLI',
+  )
+  assert.equal(
+    formatUsageClientType(
+      'claude_code',
+      'claude-cli/2.1.220 (external, claude-vscode, agent-sdk/0.3.220)',
+    ),
+    'Claude Code app',
+  )
+  assert.equal(formatUsageClientType('unknown', null), 'Unknown client')
+})
+
+function usageRequestsPayload(endpoint: unknown, withClaudeClient = false) {
   return {
     page_size: 50,
     total: 1,
@@ -64,6 +90,10 @@ function usageRequestsPayload(endpoint: unknown) {
         api_key_id: null,
         api_key_label: null,
         api_key_group_label: null,
+        user_agent: withClaudeClient
+          ? 'claude-cli/2.1.220 (external, cli)'
+          : null,
+        client_type: withClaudeClient ? 'claude_code' : 'unknown',
         client_model: 'example-model',
         reasoning_effort: null,
         started_at_ms: 1_000,
