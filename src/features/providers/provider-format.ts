@@ -7,6 +7,7 @@ import type {
 const providerNames: Record<ProviderKind, string> = {
   grok: 'Grok',
   codex: 'Codex',
+  antigravity: 'Antigravity',
   openai_compatible: 'OpenAI-compatible',
   anthropic_compatible: 'Anthropic-compatible',
   claude_oauth: 'Claude OAuth',
@@ -16,6 +17,7 @@ const oauthServiceNames: Record<OAuthProviderKind, string> = {
   grok: 'xAI',
   codex: 'OpenAI',
   claude_oauth: 'Claude',
+  antigravity: 'Google',
 }
 
 // Derived from the label maps so the accepted kinds cannot drift from the
@@ -45,7 +47,12 @@ export function formatOAuthService(provider: OAuthProviderKind): string {
 export function isOAuthProvider(
   provider: ProviderKind,
 ): provider is OAuthProviderKind {
-  return provider === 'grok' || provider === 'codex' || provider === 'claude_oauth'
+  return (
+    provider === 'grok' ||
+    provider === 'codex' ||
+    provider === 'antigravity' ||
+    provider === 'claude_oauth'
+  )
 }
 
 export function isCompatibleProvider(

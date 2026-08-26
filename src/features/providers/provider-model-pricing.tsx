@@ -8,7 +8,14 @@ import type { ProviderModel } from '@/features/providers/provider-types'
 export function ModelPricingSummary({ model }: { model: ProviderModel }) {
   const pricing = model.pricing
   if (!pricing) {
-    return <span className="text-xs text-muted-foreground">Not configured</span>
+    const subscription =
+      model.metadata?.billing_mode === 'subscription' ||
+      model.metadata?.provider === 'antigravity'
+    return (
+      <span className="text-xs text-muted-foreground">
+        {subscription ? 'No public token price' : 'Not configured'}
+      </span>
+    )
   }
   const summary = <PricingComponents pricing={pricing} />
 

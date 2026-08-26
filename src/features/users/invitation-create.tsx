@@ -170,5 +170,6 @@ function formatExpiry(timestamp: number): string {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
+    hour12: false,
   }).format(new Date(timestamp * 1000))
 }

@@ -21,6 +21,19 @@ export function findPrimaryUsage(
   return group && metric ? { group, metric } : null
 }
 
+export function findPrimaryBalance(
+  quota: ProviderQuota,
+): { group: ProviderQuotaGroup; metric: ProviderQuotaMetric } | null {
+  const group = quota.snapshot?.groups.find(
+    (candidate) => candidate.scope === 'billing',
+  )
+  const metric = group?.metrics.find(
+    (candidate) => candidate.kind === 'balance',
+  )
+
+  return group && metric ? { group, metric } : null
+}
+
 export function percentageUsed(metric: ProviderQuotaMetric): number | null {
   if (metric.unit !== 'percent') {
     return null

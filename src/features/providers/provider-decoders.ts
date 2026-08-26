@@ -3,6 +3,7 @@ import {
   oauthProviderKinds,
   providerKinds,
 } from '@/features/providers/provider-format'
+import { decodeOAuthUserCode } from '@/features/providers/provider-oauth-code'
 import { decodeProviderModelInputModalities } from '@/features/providers/provider-model-modalities'
 import {
   optionalArray,
@@ -188,6 +189,11 @@ export function decodeProviderOAuthSession(
 ): ProviderOAuthSession {
   const record = requireRecord(value, 'provider OAuth session')
   const challenge = requireRecord(record.challenge, 'provider OAuth challenge')
+  const provider = requireEnum(
+    record.provider,
+    oauthProviderKinds,
+    'OAuth session provider type',
+  )
 
   return {
     id: requireNonEmptyString(record.id, 'OAuth session ID'),
@@ -200,11 +206,7 @@ export function decodeProviderOAuthSession(
       providerVisibilities,
       'OAuth session visibility',
     ),
-    provider: requireEnum(
-      record.provider,
-      oauthProviderKinds,
-      'OAuth session provider type',
-    ),
+    provider,
     accountId: requireNonEmptyString(
       record.account_id,
       'OAuth provider account ID',
@@ -225,10 +227,7 @@ export function decodeProviderOAuthSession(
         challenge.verification_uri_complete,
         'OAuth complete verification URI',
       ),
-      userCode: requireNonEmptyString(
-        challenge.user_code,
-        'OAuth user code',
-      ),
+      userCode: decodeOAuthUserCode(challenge.user_code, provider),
       expiresAt: requireTimestamp(
         challenge.expires_at,
         'OAuth challenge expiration',

@@ -262,7 +262,7 @@ function OAuthSessionStatus({
         <ExternalLinkIcon />
       </Button>
 
-      {session.provider === 'claude_oauth' ? (
+      {session.provider === 'antigravity' || session.provider === 'claude_oauth' ? (
         <form
           className="grid gap-2 rounded-lg border p-3"
           onSubmit={(event) => {
@@ -271,7 +271,7 @@ function OAuthSessionStatus({
           }}
         >
           <label
-            htmlFor="claude-oauth-callback-url"
+            htmlFor="provider-oauth-callback-url"
             className="text-xs font-medium text-muted-foreground"
           >
             If the browser cannot open the localhost callback, paste the full
@@ -279,11 +279,15 @@ function OAuthSessionStatus({
           </label>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
-              id="claude-oauth-callback-url"
+              id="provider-oauth-callback-url"
               type="url"
               required
               value={callbackUrl}
-              placeholder="http://localhost:54545/callback?code=…&state=…"
+              placeholder={
+                session.provider === 'antigravity'
+                  ? 'http://localhost:51121/oauth-callback?code=…&state=…'
+                  : 'http://localhost:54545/callback?code=…&state=…'
+              }
               onChange={(event) => setCallbackUrl(event.target.value)}
             />
             <Button

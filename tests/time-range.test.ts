@@ -20,6 +20,13 @@ test('shared time range defaults to 5h and writes quick presets', () => {
     kind: 'preset',
     preset: '7d',
   })
+
+  applyTimeRangeParams(params, { kind: 'preset', preset: '5h' })
+  assert.equal(params.toString(), 'window=5h')
+  assert.deepEqual(parseTimeRangeSelection(params), {
+    kind: 'preset',
+    preset: '5h',
+  })
 })
 
 test('shared time range round-trips custom boundaries', () => {

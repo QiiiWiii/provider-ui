@@ -1,6 +1,7 @@
 export type ProviderKind =
   | 'grok'
   | 'codex'
+  | 'antigravity'
   | 'openai_compatible'
   | 'anthropic_compatible'
   | 'claude_oauth'
@@ -187,7 +188,7 @@ export type CreatedProviderAccount = {
 
 export type OAuthProviderKind = Extract<
   ProviderKind,
-  'grok' | 'codex' | 'claude_oauth'
+  'grok' | 'codex' | 'antigravity' | 'claude_oauth'
 >
 
 export type CompatibleProviderKind = Exclude<ProviderKind, OAuthProviderKind>
