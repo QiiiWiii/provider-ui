@@ -54,6 +54,11 @@ import {
   dashboardProvidersQueryOptions,
 } from './dashboard-query'
 import {
+  buildDashboardTrendData,
+  formatDashboardTrendTick,
+  formatDashboardTrendTooltip,
+} from './dashboard-trend'
+import {
   applyTimeRangeParams,
   currentTimeRange,
   rememberSharedTimeRangeSelection,
@@ -73,14 +78,6 @@ import type {
 const percentFormatter = new Intl.NumberFormat('en', {
   style: 'percent',
   maximumFractionDigits: 1,
-})
-const hourFormatter = new Intl.DateTimeFormat(undefined, {
-  hour: 'numeric',
-  minute: '2-digit',
-})
-const dayFormatter = new Intl.DateTimeFormat(undefined, {
-  month: 'short',
-  day: 'numeric',
 })
 const trendChartConfig = {
   requests: {
@@ -446,13 +443,7 @@ function TrendSection({
   timeRange: TimeRangeSelection
 }) {
   const showDayLabels = series.buckets.length > 24
-  const data = series.buckets.map((bucket, index) => ({
-    label: showDayLabels
-      ? dayFormatter.format(new Date(bucket))
-      : hourFormatter.format(new Date(bucket)),
-    requests: series.requests[index] ?? 0,
-    failures: series.failures[index] ?? 0,
-  }))
+  const data = buildDashboardTrendData(series)
   const totalRequests = series.requests.reduce((sum, value) => sum + value, 0)
   const totalFailures = series.failures.reduce((sum, value) => sum + value, 0)
 
@@ -479,11 +470,14 @@ function TrendSection({
             <AreaChart accessibilityLayer data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
               <CartesianGrid vertical={false} strokeDasharray="4 4" />
               <XAxis
-                dataKey="label"
+                dataKey="bucket"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
                 minTickGap={24}
+                tickFormatter={(value) =>
+                  formatDashboardTrendTick(value, showDayLabels)
+                }
               />
               <YAxis
                 allowDecimals={false}
@@ -492,7 +486,15 @@ function TrendSection({
                 tickMargin={8}
                 tickFormatter={formatUsageCompactCount}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) =>
+                      formatDashboardTrendTooltip(value, showDayLabels)
+                    }
+                  />
+                }
+              />
               <Area
                 type="monotone"
                 dataKey="requests"

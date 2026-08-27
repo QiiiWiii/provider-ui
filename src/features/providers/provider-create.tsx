@@ -51,6 +51,12 @@ const providerOptions = [
     icon: Code2Icon,
   },
   {
+    value: 'antigravity',
+    title: 'Antigravity',
+    description: 'Google models via OAuth or JSON for Codex and other clients.',
+    icon: SparklesIcon,
+  },
+  {
     value: 'openai_compatible',
     title: 'OpenAI-compatible',
     description: 'OpenAI Chat Completions or Responses endpoint.',
@@ -212,7 +218,11 @@ function CreateStepContent({ step }: { step: CreateStep }) {
             <SelectionCard
               to={stepSearch({ provider, method: 'oauth' })}
               title="Connect with OAuth"
-              description={`${formatOAuthService(provider)} device authorization.`}
+              description={
+                provider === 'antigravity'
+                  ? 'Google browser authorization with callback.'
+                  : `${formatOAuthService(provider)} device authorization.`
+              }
               icon={KeyRoundIcon}
               recommended
             />
