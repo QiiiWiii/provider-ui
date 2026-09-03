@@ -9,7 +9,7 @@ export function createApiKeyBody(
   return {
     key: input.key,
     label: input.label,
-    group_label: input.groupLabel,
+    group_labels: input.groupLabels,
     expires_at: input.expiresAt,
     quota_limit_usd: input.quotaLimitUsd,
   }
@@ -23,8 +23,8 @@ export function apiKeyPatchBody(
   if (input.label !== undefined) {
     body.label = input.label
   }
-  if (input.groupLabel !== undefined) {
-    body.group_label = input.groupLabel
+  if (input.groupLabels !== undefined) {
+    body.group_labels = input.groupLabels
   }
   if (input.enabled !== undefined) {
     body.enabled = input.enabled

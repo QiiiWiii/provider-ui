@@ -52,6 +52,10 @@ function normalizeDecimal(value: string): [string, string?] {
   return [whole.replace(/^0+(?=\d)/, ''), fraction.replace(/0+$/, '')]
 }
 
+export function formatGroupLabels(labels: readonly string[]): string {
+  return labels.join(', ')
+}
+
 export function formatApiKeyDate(timestamp: number): string {
   return formatUnixSeconds(timestamp)
 }

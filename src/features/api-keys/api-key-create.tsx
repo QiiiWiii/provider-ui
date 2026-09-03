@@ -42,11 +42,15 @@ import { apiErrorMessage } from '@/lib/api/error'
 const apiKeyCreateSchema = z
   .object({
     label: z.string().trim().min(1, 'Name is required.'),
-    groupLabel: z
-      .string()
-      .trim()
-      .min(1, 'Provider group is required.')
-      .max(64, 'Provider group must be 64 characters or fewer.'),
+    groupLabels: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(1, 'Provider group is required.')
+          .max(64, 'Provider group must be 64 characters or fewer.'),
+      )
+      .min(1, 'Select at least one Provider group.'),
     key: z
       .string()
       .min(1, 'API key is required.')
@@ -94,7 +98,7 @@ type ApiKeyCreateValues = z.infer<typeof apiKeyCreateSchema>
 
 const defaultValues: ApiKeyCreateValues = {
   label: '',
-  groupLabel: '',
+  groupLabels: [],
   key: '',
   quotaLimitUsd: '',
   expiresAt: '',
@@ -135,7 +139,7 @@ export function ApiKeyCreateDialog({
       const created = await createApiKey({
         key: values.key,
         label: values.label,
-        groupLabel: values.groupLabel,
+        groupLabels: values.groupLabels,
         quotaLimitUsd: values.quotaLimitUsd.trim() || null,
         expiresAt: dateTimeLocalToTimestamp(values.expiresAt),
       })
@@ -199,11 +203,11 @@ export function ApiKeyCreateDialog({
                   <FieldError errors={[form.formState.errors.label]} />
                 </Field>
 
-                <Field data-invalid={Boolean(form.formState.errors.groupLabel)}>
-                  <FieldLabel htmlFor="api-key-group">Provider group</FieldLabel>
+                <Field data-invalid={Boolean(form.formState.errors.groupLabels)}>
+                  <FieldLabel htmlFor="api-key-group">Provider groups</FieldLabel>
                   <Controller
                     control={form.control}
-                    name="groupLabel"
+                    name="groupLabels"
                     render={({ field }) => (
                       <ApiKeyProviderGroupField
                         id="api-key-group"
@@ -211,11 +215,11 @@ export function ApiKeyCreateDialog({
                         onChange={field.onChange}
                         catalog={providerGroups}
                         disabled={busy}
-                        invalid={Boolean(form.formState.errors.groupLabel)}
+                        invalid={Boolean(form.formState.errors.groupLabels)}
                       />
                     )}
                   />
-                  <FieldError errors={[form.formState.errors.groupLabel]} />
+                  <FieldError errors={[form.formState.errors.groupLabels]} />
                 </Field>
 
                 <Field data-invalid={Boolean(form.formState.errors.key)}>

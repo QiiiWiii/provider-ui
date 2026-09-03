@@ -47,7 +47,7 @@ export type UsageRequestSummary = {
   endpoint: UsageEndpoint | null
   apiKeyId: string | null
   apiKeyLabel: string | null
-  apiKeyGroupLabel: string | null
+  apiKeyGroupLabels: string[] | null
   clientModel: string | null
   reasoningEffort: string | null
   startedAtMs: number

@@ -3,7 +3,7 @@ import type { ProviderAccount } from '@/features/providers/provider-types'
 export function providerGroupImpact(
   account: ProviderAccount,
   providers: ProviderAccount[] | undefined,
-  apiKeys: Array<{ groupLabel: string }> | undefined,
+  apiKeys: Array<{ groupLabels: string[] }> | undefined,
   pending: boolean,
   failed: boolean,
 ) {
@@ -12,7 +12,7 @@ export function providerGroupImpact(
     pending,
     failed,
     apiKeyCount:
-      apiKeys?.filter((key) => key.groupLabel === account.groupLabel).length ?? 0,
+      apiKeys?.filter((key) => key.groupLabels.includes(account.groupLabel)).length ?? 0,
     alternativeEnabledProviders:
       providers?.filter(
         (provider) =>

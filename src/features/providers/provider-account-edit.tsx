@@ -141,7 +141,7 @@ export function ProviderEditDialog({ account }: { account: ProviderAccount }) {
     nextGroupLabel.length > 0 && nextGroupLabel !== account.groupLabel
   const affectedKeyCount =
     apiKeys.isSuccess
-      ? apiKeys.data.filter((key) => key.groupLabel === account.groupLabel).length
+      ? apiKeys.data.filter((key) => key.groupLabels.includes(account.groupLabel)).length
       : null
 
   function handleOpenChange(nextOpen: boolean) {

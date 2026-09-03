@@ -2,12 +2,16 @@ import { Loader2Icon, RefreshCwIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  useComboboxAnchor,
+} from '@/components/ui/combobox'
 import type { ProviderGroupCatalog } from '@/features/api-keys/provider-group-options'
 
 export function ApiKeyProviderGroupField({
@@ -15,52 +19,61 @@ export function ApiKeyProviderGroupField({
   value,
   onChange,
   catalog,
-  currentGroup,
+  currentGroups = [],
   disabled,
   invalid,
 }: {
   id: string
-  value: string
-  onChange: (value: string) => void
+  value: string[]
+  onChange: (value: string[]) => void
   catalog: ProviderGroupCatalog
-  currentGroup?: string
+  currentGroups?: readonly string[]
   disabled: boolean
   invalid: boolean
 }) {
-  const currentUnavailable = Boolean(
-    currentGroup && !catalog.values.includes(currentGroup),
+  const anchor = useComboboxAnchor()
+  const extra = currentGroups.filter(
+    (group) => !catalog.values.includes(group) && value.includes(group),
   )
-  const choices = currentUnavailable && currentGroup
-    ? [currentGroup, ...catalog.values]
-    : catalog.values
+  const choices = [...extra, ...catalog.values]
   const selectionDisabled =
     disabled || catalog.status !== 'ready' || catalog.values.length === 0
+  const currentUnavailable = extra.length > 0
 
   return (
     <>
-      <Select
-        value={value || null}
-        onValueChange={(nextValue) => onChange(nextValue ?? '')}
+      <Combobox
+        multiple
+        value={value}
+        onValueChange={onChange}
         disabled={selectionDisabled}
       >
-        <SelectTrigger
-          id={id}
-          className="w-full"
-          aria-invalid={invalid}
-        >
-          <SelectValue placeholder={providerGroupPlaceholder(catalog)} />
-        </SelectTrigger>
-        <SelectContent align="start">
-          {choices.map((group) => {
-            const available = catalog.values.includes(group)
-            return (
-              <SelectItem key={group} value={group} disabled={!available}>
-                {available ? group : `${group} (unavailable)`}
-              </SelectItem>
-            )
-          })}
-        </SelectContent>
-      </Select>
+        <ComboboxChips ref={anchor} aria-invalid={invalid} className="w-full">
+          {value.map((group) => (
+            <ComboboxChip key={group}>{group}</ComboboxChip>
+          ))}
+          <ComboboxChipsInput
+            id={id}
+            placeholder={
+              value.length === 0 ? providerGroupPlaceholder(catalog) : undefined
+            }
+            disabled={selectionDisabled}
+          />
+        </ComboboxChips>
+        <ComboboxContent anchor={anchor}>
+          <ComboboxEmpty>No matching groups</ComboboxEmpty>
+          <ComboboxList>
+            {choices.map((group) => {
+              const available = catalog.values.includes(group)
+              return (
+                <ComboboxItem key={group} value={group} disabled={!available}>
+                  {available ? group : group + ' (unavailable)'}
+                </ComboboxItem>
+              )
+            })}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
       <ProviderGroupStatus
         catalog={catalog}
         currentUnavailable={currentUnavailable}
@@ -114,7 +127,7 @@ function ProviderGroupStatus({
   return (
     <div className="text-sm text-muted-foreground">
       {currentUnavailable
-        ? 'The current group is unavailable. Select an enabled group to change it.'
+        ? 'A selected group is unavailable. Remove it or keep the current groups unchanged.'
         : 'Enabled Provider groups available to this account.'}
     </div>
   )
@@ -130,5 +143,5 @@ function providerGroupPlaceholder(catalog: ProviderGroupCatalog): string {
   if (catalog.values.length === 0) {
     return 'No enabled groups'
   }
-  return 'Select a group'
+  return 'Select groups'
 }

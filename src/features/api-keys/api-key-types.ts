@@ -1,7 +1,7 @@
 export type ApiKeySummary = {
   id: string
   ownerUserId: string
-  groupLabel: string
+  groupLabels: string[]
   label: string
   maskedKey: string
   enabled: boolean
@@ -24,7 +24,7 @@ export type CreatedApiKey = Omit<ApiKeySummary, 'maskedKey'> & {
 export type CreateApiKeyInput = {
   key: string
   label: string
-  groupLabel: string
+  groupLabels: string[]
   expiresAt: number | null
   quotaLimitUsd: string | null
 }
@@ -32,7 +32,7 @@ export type CreateApiKeyInput = {
 export type UpdateApiKeyInput = {
   keyId: string
   label?: string
-  groupLabel?: string
+  groupLabels?: string[]
   enabled?: boolean
   expiresAt?: number | null
   quotaLimitUsd?: string | null

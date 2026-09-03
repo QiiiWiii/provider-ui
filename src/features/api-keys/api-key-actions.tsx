@@ -309,11 +309,15 @@ export function ApiKeyRevealDialog({ apiKey }: { apiKey: ApiKeySummary }) {
 const editSchema = z
   .object({
     label: z.string().trim().min(1, 'Name is required.'),
-    groupLabel: z
-      .string()
-      .trim()
-      .min(1, 'Provider group is required.')
-      .max(64, 'Provider group must be 64 characters or fewer.'),
+    groupLabels: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(1, 'Provider group is required.')
+          .max(64, 'Provider group must be 64 characters or fewer.'),
+      )
+      .min(1, 'Select at least one Provider group.'),
     expiresAt: z.string(),
     quotaLimitUsd: z.string(),
   })
@@ -365,8 +369,8 @@ function ApiKeyEditDialog({
       return updateApiKey({
         keyId: apiKey.id,
         ...(dirtyFields.label ? { label: values.label } : {}),
-        ...(dirtyFields.groupLabel
-          ? { groupLabel: values.groupLabel }
+        ...(dirtyFields.groupLabels
+          ? { groupLabels: values.groupLabels }
           : {}),
         ...(dirtyFields.expiresAt
           ? { expiresAt: dateTimeLocalToTimestamp(values.expiresAt) }
@@ -451,26 +455,26 @@ function ApiKeyEditDialog({
               <FieldError errors={[form.formState.errors.label]} />
             </Field>
 
-            <Field data-invalid={Boolean(form.formState.errors.groupLabel)}>
+            <Field data-invalid={Boolean(form.formState.errors.groupLabels)}>
               <FieldLabel htmlFor={`api-key-group-${apiKey.id}`}>
-                Provider group
+                Provider groups
               </FieldLabel>
               <Controller
                 control={form.control}
-                name="groupLabel"
+                name="groupLabels"
                 render={({ field }) => (
                   <ApiKeyProviderGroupField
                     id={`api-key-group-${apiKey.id}`}
                     value={field.value}
                     onChange={field.onChange}
                     catalog={providerGroups}
-                    currentGroup={apiKey.groupLabel}
+                    currentGroups={apiKey.groupLabels}
                     disabled={busy}
-                    invalid={Boolean(form.formState.errors.groupLabel)}
+                    invalid={Boolean(form.formState.errors.groupLabels)}
                   />
                 )}
               />
-              <FieldError errors={[form.formState.errors.groupLabel]} />
+              <FieldError errors={[form.formState.errors.groupLabels]} />
             </Field>
 
             <Field data-invalid={Boolean(form.formState.errors.expiresAt)}>
@@ -613,7 +617,7 @@ function ApiKeyDeleteDialog({
 function editDefaultValues(apiKey: ApiKeySummary): EditValues {
   return {
     label: apiKey.label,
-    groupLabel: apiKey.groupLabel,
+    groupLabels: apiKey.groupLabels,
     expiresAt: toDateTimeLocalValue(apiKey.expiresAt),
     quotaLimitUsd: compactUsd(apiKey.quotaLimitUsd),
   }

@@ -177,12 +177,12 @@ function decodeRequestSummary(value: unknown, label: string): UsageRequestSummar
       record.api_key_label == null
         ? null
         : requireNonEmptyString(record.api_key_label, `${label} api key label`),
-    apiKeyGroupLabel:
-      record.api_key_group_label == null
+    apiKeyGroupLabels:
+      record.api_key_group_labels == null
         ? null
-        : requireNonEmptyString(
-            record.api_key_group_label,
-            `${label} api key group`,
+        : requireGroupLabels(
+            record.api_key_group_labels,
+            label + ' api key groups',
           ),
     clientModel:
       record.client_model == null
@@ -280,4 +280,14 @@ function requireDecimalAmount(value: unknown, label: string): string {
 
 function nullableDecimalAmount(value: unknown, label: string): string | null {
   return value == null ? null : requireDecimalAmount(value, label)
+}
+
+function requireGroupLabels(value: unknown, label: string): string[] {
+  const labels = requireArray(value, label).map((group, index) =>
+    requireNonEmptyString(group, label + ' ' + String(index + 1)),
+  )
+  if (labels.length === 0) {
+    throw new TypeError(label + ' must contain at least one group')
+  }
+  return labels
 }
