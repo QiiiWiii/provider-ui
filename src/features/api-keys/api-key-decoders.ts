@@ -2,7 +2,7 @@ import type {
   ApiKeyDetail,
   ApiKeySummary,
   CreatedApiKey,
-} from '@/features/api-keys/api-key-types'
+} from './api-key-types.ts'
 import {
   optionalTimestamp,
   requireArray,
@@ -10,7 +10,7 @@ import {
   requireNonEmptyString,
   requireRecord,
   requireTimestamp,
-} from '@/lib/api/decode'
+} from '../../lib/api/decode.ts'
 
 export function decodeApiKeys(value: unknown): ApiKeySummary[] {
   return requireArray(value, 'API keys').map((key, index) =>
@@ -54,7 +54,7 @@ function decodeCommonApiKey(record: Record<string, unknown>) {
   return {
     id: requireNonEmptyString(record.id, 'API key ID'),
     ownerUserId: requireNonEmptyString(record.owner_user_id, 'API key owner ID'),
-    groupLabel: requireNonEmptyString(record.group_label, 'API key group label'),
+    groupLabels: requireGroupLabels(record.group_labels, 'API key group labels'),
     label: requireNonEmptyString(record.label, 'API key label'),
     enabled: requireBoolean(record.enabled, 'API key enabled state'),
     expiresAt: optionalTimestamp(record.expires_at, 'API key expiration'),
@@ -91,4 +91,14 @@ function requireUsdAmount(
     )
   }
   return value
+}
+
+function requireGroupLabels(value: unknown, label: string): string[] {
+  const labels = requireArray(value, label).map((group, index) =>
+    requireNonEmptyString(group, label + ' ' + String(index + 1)),
+  )
+  if (labels.length === 0) {
+    throw new TypeError(label + ' must contain at least one group')
+  }
+  return labels
 }

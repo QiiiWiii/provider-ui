@@ -11,14 +11,14 @@ test('API key creation uses the exact management contract', () => {
     createApiKeyBody({
       key: 'custom-api-key',
       label: 'CI',
-      groupLabel: 'shared-codex',
+      groupLabels: ['shared-codex', 'claude'],
       expiresAt: null,
       quotaLimitUsd: '12.5',
     }),
     {
       key: 'custom-api-key',
       label: 'CI',
-      group_label: 'shared-codex',
+      group_labels: ['shared-codex', 'claude'],
       expires_at: null,
       quota_limit_usd: '12.5',
     },

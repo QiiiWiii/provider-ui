@@ -133,6 +133,6 @@ function resolveApiKeyMeta(item: UsageRequestSummary): {
 
   return {
     name: item.apiKeyLabel ?? '—',
-    group: item.apiKeyGroupLabel ?? '—',
+    group: item.apiKeyGroupLabels?.join(', ') ?? '—',
   }
 }

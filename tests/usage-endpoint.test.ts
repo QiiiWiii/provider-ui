@@ -63,7 +63,7 @@ function usageRequestsPayload(endpoint: unknown) {
         endpoint,
         api_key_id: null,
         api_key_label: null,
-        api_key_group_label: null,
+        api_key_group_labels: null,
         client_model: 'example-model',
         reasoning_effort: null,
         started_at_ms: 1_000,

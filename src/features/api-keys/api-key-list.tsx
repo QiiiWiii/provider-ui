@@ -38,6 +38,7 @@ import { ApiKeyCreateDialog } from '@/features/api-keys/api-key-create'
 import {
   formatApiKeyDate,
   formatApiKeyDateTime,
+  formatGroupLabels,
   getApiKeyStatus,
   type ApiKeyStatus,
 } from '@/features/api-keys/api-key-format'
@@ -113,7 +114,7 @@ function ApiKeyCollection({
             <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="pl-4">Name</TableHead>
               <TableHead>API Key</TableHead>
-              <TableHead>Group</TableHead>
+              <TableHead>Groups</TableHead>
               <TableHead>Usage</TableHead>
               <TableHead>Expires</TableHead>
               <TableHead>Status</TableHead>
@@ -171,7 +172,7 @@ function ApiKeyTableRow({
         </div>
       </TableCell>
       <TableCell className="text-muted-foreground">
-        {apiKey.groupLabel}
+        {formatGroupLabels(apiKey.groupLabels)}
       </TableCell>
       <TableCell className="text-muted-foreground tabular-nums">
         {formatUsage(apiKey)}
@@ -224,9 +225,9 @@ function ApiKeyCard({
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-4 border-t pt-4 text-sm">
         <div className="grid gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Group</span>
+          <span className="text-xs font-medium text-muted-foreground">Groups</span>
           <span className="text-muted-foreground">
-            {apiKey.groupLabel}
+            {formatGroupLabels(apiKey.groupLabels)}
           </span>
         </div>
         <div className="grid gap-1.5">
