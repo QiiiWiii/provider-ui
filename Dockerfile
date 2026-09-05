@@ -1,4 +1,6 @@
-FROM node:24-bookworm-slim AS builder
+# syntax=docker/dockerfile:1.7
+
+FROM --platform=$BUILDPLATFORM node:24-bookworm-slim AS builder
 WORKDIR /src
 
 COPY package.json package-lock.json ./
