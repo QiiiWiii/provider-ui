@@ -29,7 +29,10 @@ import {
   percentageRemaining,
   percentageUsed,
 } from '@/features/providers/provider-quota-metrics'
-import { quotaMetricDisplay } from '@/features/providers/provider-quota-format'
+import {
+  formatQuotaEstimateValue,
+  quotaMetricDisplay,
+} from '@/features/providers/provider-quota-format'
 import {
   syncProviderListQuota,
   syncQuotaCache,
@@ -135,6 +138,15 @@ export function ProviderQuotaSummary({
       ) : null}
       <ProviderQuotaFreshness quota={quota} compact />
     </div>
+  )
+}
+
+export function ProviderQuotaEstimate({ quota }: { quota: ProviderQuota }) {
+  const value = formatQuotaEstimateValue(findPrimaryUsage(quota)?.metric)
+  return (
+    <span className="text-sm tabular-nums text-muted-foreground">
+      {value ?? '—'}
+    </span>
   )
 }
 

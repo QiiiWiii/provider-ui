@@ -39,7 +39,10 @@ import {
 import { ProviderEditDialog } from '@/features/providers/provider-account-edit'
 import { ProviderCreateDialog } from '@/features/providers/provider-create'
 import { formatProviderKind } from '@/features/providers/provider-format'
-import { ProviderQuotaSummary } from '@/features/providers/provider-quota'
+import {
+  ProviderQuotaEstimate,
+  ProviderQuotaSummary,
+} from '@/features/providers/provider-quota'
 import {
   syncQuotaCache,
 } from '@/features/providers/provider-quota-cache'
@@ -123,7 +126,8 @@ function ProviderAccounts({
               <TableHead>Credential</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="min-w-48 pr-4">Quota</TableHead>
+              <TableHead className="min-w-48">Quota</TableHead>
+              <TableHead className="min-w-36 pr-4">Estimate</TableHead>
               <TableHead className="pr-4 text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -201,8 +205,11 @@ function ProviderTableRow({
       <TableCell>
         <ProviderStatus account={account} />
       </TableCell>
-      <TableCell className="pr-4">
+      <TableCell>
         <ProviderQuotaSummary accountId={account.id} quota={account.quota} />
+      </TableCell>
+      <TableCell className="pr-4">
+        <ProviderQuotaEstimate quota={account.quota} />
       </TableCell>
       <TableCell className="pr-4 text-right">
         {ownedByCurrentUser ? <ProviderEditDialog account={account} /> : null}
@@ -263,15 +270,19 @@ function ProviderCard({
         <MobileField label="Status">
           <ProviderStatus account={account} />
         </MobileField>
-        <MobileField label="Updated">
-          <span className="text-muted-foreground">
-            {formatTimestamp(account.updatedAt)}
-          </span>
-        </MobileField>
-        <div className="col-span-2 grid min-w-0 content-start gap-1.5 border-t pt-4">
-          <span className="text-xs font-medium text-muted-foreground">Quota</span>
-          <ProviderQuotaSummary accountId={account.id} quota={account.quota} />
+        <div className="col-span-2">
+          <MobileField label="Updated">
+            <span className="text-muted-foreground">
+              {formatTimestamp(account.updatedAt)}
+            </span>
+          </MobileField>
         </div>
+        <MobileField label="Quota">
+          <ProviderQuotaSummary accountId={account.id} quota={account.quota} />
+        </MobileField>
+        <MobileField label="Estimate">
+          <ProviderQuotaEstimate quota={account.quota} />
+        </MobileField>
         {ownedByCurrentUser ? (
           <div className="col-span-2 flex justify-end border-t pt-4">
             <ProviderEditDialog account={account} />
@@ -403,15 +414,15 @@ function ProviderListLoading() {
   return (
     <>
       <Card className="hidden gap-0 py-0 md:flex">
-        <div className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.4fr_auto] gap-4 border-b bg-muted/50 px-4 py-3">
-          {Array.from({ length: 7 }, (_, index) => (
+        <div className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.2fr_1fr_auto] gap-4 border-b bg-muted/50 px-4 py-3">
+          {Array.from({ length: 8 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-20" />
           ))}
         </div>
         {Array.from({ length: 4 }, (_, index) => (
           <div
             key={index}
-            className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.4fr_auto] items-center gap-4 border-b px-4 py-3.5 last:border-b-0"
+            className="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1.2fr_1fr_auto] items-center gap-4 border-b px-4 py-3.5 last:border-b-0"
           >
             <div className="flex items-center gap-3">
               <Skeleton className="size-9" />
@@ -429,6 +440,7 @@ function ProviderListLoading() {
               <Skeleton className="h-1 w-full" />
               <Skeleton className="h-3 w-24" />
             </div>
+            <Skeleton className="h-4 w-24" />
             <Skeleton className="h-7 w-16" />
           </div>
         ))}

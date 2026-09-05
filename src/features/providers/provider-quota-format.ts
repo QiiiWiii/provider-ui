@@ -7,6 +7,10 @@ import {
   formatPercent,
   percentageUsed,
 } from '@/features/providers/provider-quota-metrics'
+import {
+  formatUsageCompactCount,
+  formatUsageCost,
+} from '@/features/usage/usage-format'
 
 const amountFormatter = new Intl.NumberFormat('en', {
   maximumFractionDigits: 2,
@@ -201,6 +205,25 @@ export function billingAttributes(group: ProviderQuotaGroup) {
   }
 
   return values
+}
+
+
+export function formatQuotaEstimateValue(
+  metric: ProviderQuotaMetric | null | undefined,
+): string | null {
+  const estimate = metric?.estimate
+  if (!estimate) {
+    return null
+  }
+
+  const parts: string[] = []
+  if (estimate.estimatedLimitTokens !== null) {
+    parts.push(formatUsageCompactCount(estimate.estimatedLimitTokens))
+  }
+  if (estimate.estimatedLimitCostUsd !== null) {
+    parts.push(formatUsageCost(estimate.estimatedLimitCostUsd))
+  }
+  return parts.length > 0 ? parts.join(' / ') : null
 }
 
 export function rollingPeriodLabel(durationSeconds: number | null): string {

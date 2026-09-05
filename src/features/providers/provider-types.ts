@@ -81,6 +81,15 @@ export type ProviderQuotaBreakdown = {
   used: number
 }
 
+export type ProviderQuotaWindowEstimate = {
+  windowStart: number
+  windowEnd: number
+  observedTokens: number | null
+  estimatedLimitTokens: number | null
+  observedCostUsd: string | null
+  estimatedLimitCostUsd: string | null
+}
+
 export type ProviderQuotaMetric = {
   key: string
   kind: ProviderQuotaMetricKind
@@ -90,6 +99,7 @@ export type ProviderQuotaMetric = {
   limit: number | null
   period: ProviderQuotaPeriod | null
   breakdown: ProviderQuotaBreakdown[]
+  estimate: ProviderQuotaWindowEstimate | null
 }
 
 export type ProviderQuotaGroup = {
