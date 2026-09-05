@@ -44,6 +44,7 @@ import type {
   ProviderQuotaScalar,
   ProviderQuotaSupport,
   ProviderQuotaUnit,
+  ProviderQuotaWindowEstimate,
   ProviderVisibility,
 } from '@/features/providers/provider-types'
 
@@ -436,6 +437,10 @@ function decodeProviderQuotaMetric(value: unknown, label: string) {
       (item, index) =>
         decodeProviderQuotaBreakdown(item, `quota breakdown ${index + 1}`),
     ),
+    estimate:
+      record.estimate == null
+        ? null
+        : decodeProviderQuotaWindowEstimate(record.estimate),
   }
 }
 
@@ -455,6 +460,51 @@ function decodeProviderQuotaPeriod(value: unknown) {
       'quota period duration',
     ),
   }
+}
+
+
+function decodeProviderQuotaWindowEstimate(
+  value: unknown,
+): ProviderQuotaWindowEstimate {
+  const record = requireRecord(value, 'quota window estimate')
+
+  return {
+    windowStart: requireNonNegativeInteger(
+      record.window_start,
+      'quota estimate window start',
+    ),
+    windowEnd: requireNonNegativeInteger(
+      record.window_end,
+      'quota estimate window end',
+    ),
+    observedTokens: optionalNonNegativeInteger(
+      record.observed_tokens,
+      'quota estimate observed tokens',
+    ),
+    estimatedLimitTokens: optionalNonNegativeInteger(
+      record.estimated_limit_tokens,
+      'quota estimate token limit',
+    ),
+    observedCostUsd: optionalString(
+      record.observed_cost_usd,
+      'quota estimate observed cost',
+    ),
+    estimatedLimitCostUsd: optionalString(
+      record.estimated_limit_cost_usd,
+      'quota estimate cost limit',
+    ),
+  }
+}
+
+function optionalNonNegativeInteger(
+  value: unknown,
+  label: string,
+): number | null {
+  if (value == null) {
+    return null
+  }
+
+  return requireNonNegativeInteger(value, label)
 }
 
 function decodeProviderQuotaBreakdown(value: unknown, label: string) {
