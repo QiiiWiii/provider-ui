@@ -16,18 +16,42 @@ export function formatUsageCount(value: number): string {
 }
 
 // Compact counts for dense table cells (design: 1.1K, not 1,100).
+const compactUnits = [
+  { size: 1_000_000_000_000, suffix: 'T' },
+  { size: 1_000_000_000, suffix: 'B' },
+  { size: 1_000_000, suffix: 'M' },
+  { size: 1_000, suffix: 'K' },
+] as const
+
 export function formatUsageCompactCount(value: number): string {
-  if (value < 1000) {
+  if (!Number.isFinite(value)) {
+    return '—'
+  }
+
+  const magnitude = Math.abs(value)
+  if (magnitude < 1000) {
     return formatUsageCount(Math.round(value))
   }
-  if (value < 1_000_000) {
-    const kilo = value / 1000
-    const digits = kilo >= 10 ? 0 : 1
-    return `${trimTrailingZero(kilo.toFixed(digits))}K`
+
+  for (let index = 0; index < compactUnits.length; index += 1) {
+    const unit = compactUnits[index]
+    if (magnitude < unit.size) {
+      continue
+    }
+
+    const scaled = value / unit.size
+    const digits = Math.abs(scaled) >= 10 ? 0 : 1
+    const rendered = trimTrailingZero(scaled.toFixed(digits))
+    if (Math.abs(Number(rendered)) >= 1000 && index > 0) {
+      const larger = compactUnits[index - 1]
+      const next = value / larger.size
+      const nextDigits = Math.abs(next) >= 10 ? 0 : 1
+      return `${trimTrailingZero(next.toFixed(nextDigits))}${larger.suffix}`
+    }
+    return `${rendered}${unit.suffix}`
   }
-  const mega = value / 1_000_000
-  const digits = mega >= 10 ? 0 : 1
-  return `${trimTrailingZero(mega.toFixed(digits))}M`
+
+  return formatUsageCount(Math.round(value))
 }
 
 function trimTrailingZero(value: string): string {
