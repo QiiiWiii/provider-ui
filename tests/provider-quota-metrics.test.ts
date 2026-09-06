@@ -18,6 +18,7 @@ function quota(
       warnings: [],
     },
     lastError: null,
+    estimate: null,
   }
 }
 
@@ -38,7 +39,6 @@ test('finds a billing balance for subscription quota summaries', () => {
             limit: null,
             period: null,
             breakdown: [],
-            estimate: null,
           },
         ],
       },
@@ -66,7 +66,6 @@ test('does not treat usage metrics as a billing balance', () => {
               limit: 100,
               period: null,
               breakdown: [],
-              estimate: null,
             },
           ],
         },

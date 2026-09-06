@@ -7,10 +7,6 @@ import {
   formatPercent,
   percentageUsed,
 } from '@/features/providers/provider-quota-metrics'
-import {
-  formatUsageCompactCount,
-  formatUsageCost,
-} from '@/features/usage/usage-format'
 
 const amountFormatter = new Intl.NumberFormat('en', {
   maximumFractionDigits: 2,
@@ -208,24 +204,6 @@ export function billingAttributes(group: ProviderQuotaGroup) {
 }
 
 
-export function formatQuotaEstimateValue(
-  metric: ProviderQuotaMetric | null | undefined,
-): string | null {
-  const estimate = metric?.estimate
-  if (!estimate) {
-    return null
-  }
-
-  const parts: string[] = []
-  if (estimate.estimatedLimitTokens !== null) {
-    parts.push(formatUsageCompactCount(estimate.estimatedLimitTokens))
-  }
-  if (estimate.estimatedLimitCostUsd !== null) {
-    parts.push(formatUsageCost(estimate.estimatedLimitCostUsd))
-  }
-  return parts.length > 0 ? parts.join(' / ') : null
-}
-
 export function rollingPeriodLabel(durationSeconds: number | null): string {
   if (!durationSeconds) {
     return 'Rolling allowance'
@@ -243,6 +221,21 @@ export function rollingPeriodLabel(durationSeconds: number | null): string {
 
   const minutes = Math.max(1, Math.round(durationSeconds / 60))
   return `${minutes}-minute rolling allowance`
+}
+
+export function quotaEstimatePeriodLabel(
+  kind: string,
+  durationSeconds: number | null,
+): string {
+  if (kind === 'monthly') return 'month'
+  if (kind === 'weekly') return 'week'
+  if (durationSeconds && durationSeconds % 86_400 === 0) {
+    return `${durationSeconds / 86_400}d window`
+  }
+  if (durationSeconds && durationSeconds % 3_600 === 0) {
+    return `${durationSeconds / 3_600}h window`
+  }
+  return 'quota window'
 }
 
 function titleCase(value: string): string {
