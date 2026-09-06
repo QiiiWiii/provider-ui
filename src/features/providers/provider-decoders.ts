@@ -36,6 +36,9 @@ import type {
   ProviderOAuthSession,
   ProviderOAuthStatus,
   ProviderQuota,
+  ProviderQuotaEstimate,
+  ProviderQuotaEstimateCompleteness,
+  ProviderQuotaEstimateHistory,
   ProviderQuotaErrorKind,
   ProviderQuotaFreshness,
   ProviderQuotaGroupScope,
@@ -44,7 +47,6 @@ import type {
   ProviderQuotaScalar,
   ProviderQuotaSupport,
   ProviderQuotaUnit,
-  ProviderQuotaWindowEstimate,
   ProviderVisibility,
 } from '@/features/providers/provider-types'
 
@@ -70,6 +72,11 @@ const providerOAuthStatuses = [
   'failed',
   'cancelled',
 ] as const satisfies readonly ProviderOAuthStatus[]
+
+const providerQuotaEstimateCompleteness = [
+  'complete',
+  'lower_bound',
+] as const satisfies readonly ProviderQuotaEstimateCompleteness[]
 
 const providerQuotaSupports = [
   'supported',
@@ -378,6 +385,90 @@ export function decodeProviderQuota(value: unknown): ProviderQuota {
       providerQuotaErrorKinds,
       'quota error kind',
     ),
+    estimate:
+      record.estimate == null
+        ? null
+        : decodeProviderQuotaEstimate(record.estimate),
+  }
+}
+
+export function decodeProviderQuotaEstimateHistory(
+  value: unknown,
+): ProviderQuotaEstimateHistory {
+  const record = requireRecord(value, 'provider quota estimate history')
+  return {
+    fromMs: requireTimestamp(record.from_ms, 'estimate history start'),
+    toMs: requireTimestamp(record.to_ms, 'estimate history end'),
+    series: requireArray(record.series, 'estimate history series').map(
+      (value, index) => {
+        const series = requireRecord(value, `estimate series ${index + 1}`)
+        return {
+          groupKey: requireNonEmptyString(series.group_key, 'estimate group key'),
+          metricKey: requireNonEmptyString(series.metric_key, 'estimate metric key'),
+          periodKind: requireEnum(
+            series.period_kind,
+            providerQuotaPeriodKinds,
+            'estimate period kind',
+          ),
+          durationSeconds:
+            series.duration_seconds == null
+              ? null
+              : requirePositiveInteger(
+                  series.duration_seconds,
+                  'estimate duration',
+                ),
+          points: requireArray(series.points, 'estimate series points').map(
+            decodeProviderQuotaEstimate,
+          ),
+        }
+      },
+    ),
+  }
+}
+
+function decodeProviderQuotaEstimate(value: unknown): ProviderQuotaEstimate {
+  const record = requireRecord(value, 'provider quota estimate')
+  const observedUsedPercent = requireQuotaAmount(
+    record.observed_used_percent,
+    'estimate observed percent',
+  )
+  if (observedUsedPercent < 0 || observedUsedPercent > 100) {
+    throw new TypeError('estimate observed percent must be between 0 and 100')
+  }
+  return {
+    quotaGroupKey: requireNonEmptyString(record.quota_group_key, 'estimate quota group'),
+    quotaMetricKey: requireNonEmptyString(record.quota_metric_key, 'estimate quota metric'),
+    periodKind: requireEnum(
+      record.period_kind,
+      providerQuotaPeriodKinds,
+      'estimate period kind',
+    ),
+    durationSeconds:
+      record.duration_seconds == null
+        ? null
+        : requirePositiveInteger(record.duration_seconds, 'estimate duration'),
+    windowStartMs: requireTimestamp(record.window_start_ms, 'estimate window start'),
+    windowEndMs: requireTimestamp(record.window_end_ms, 'estimate window end'),
+    observedAtMs: requireTimestamp(record.observed_at_ms, 'estimate observation time'),
+    observedUsedPercent,
+    observedCostUsd: requireNonEmptyString(record.observed_cost_usd, 'estimate observed cost'),
+    estimatedLimitCostUsd: requireNonEmptyString(
+      record.estimated_limit_cost_usd,
+      'estimate limit cost',
+    ),
+    costCompleteness: requireEnum(
+      record.cost_completeness,
+      providerQuotaEstimateCompleteness,
+      'estimate cost completeness',
+    ),
+    pricedAttempts: requireNonNegativeInteger(
+      record.priced_attempts,
+      'estimate priced attempts',
+    ),
+    dispatchedAttempts: requirePositiveInteger(
+      record.dispatched_attempts,
+      'estimate dispatched attempts',
+    ),
   }
 }
 
@@ -437,10 +528,6 @@ function decodeProviderQuotaMetric(value: unknown, label: string) {
       (item, index) =>
         decodeProviderQuotaBreakdown(item, `quota breakdown ${index + 1}`),
     ),
-    estimate:
-      record.estimate == null
-        ? null
-        : decodeProviderQuotaWindowEstimate(record.estimate),
   }
 }
 
@@ -460,51 +547,6 @@ function decodeProviderQuotaPeriod(value: unknown) {
       'quota period duration',
     ),
   }
-}
-
-
-function decodeProviderQuotaWindowEstimate(
-  value: unknown,
-): ProviderQuotaWindowEstimate {
-  const record = requireRecord(value, 'quota window estimate')
-
-  return {
-    windowStart: requireNonNegativeInteger(
-      record.window_start,
-      'quota estimate window start',
-    ),
-    windowEnd: requireNonNegativeInteger(
-      record.window_end,
-      'quota estimate window end',
-    ),
-    observedTokens: optionalNonNegativeInteger(
-      record.observed_tokens,
-      'quota estimate observed tokens',
-    ),
-    estimatedLimitTokens: optionalNonNegativeInteger(
-      record.estimated_limit_tokens,
-      'quota estimate token limit',
-    ),
-    observedCostUsd: optionalString(
-      record.observed_cost_usd,
-      'quota estimate observed cost',
-    ),
-    estimatedLimitCostUsd: optionalString(
-      record.estimated_limit_cost_usd,
-      'quota estimate cost limit',
-    ),
-  }
-}
-
-function optionalNonNegativeInteger(
-  value: unknown,
-  label: string,
-): number | null {
-  if (value == null) {
-    return null
-  }
-
-  return requireNonNegativeInteger(value, label)
 }
 
 function decodeProviderQuotaBreakdown(value: unknown, label: string) {

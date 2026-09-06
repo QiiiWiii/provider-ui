@@ -29,7 +29,7 @@ export function requireNonEmptyString(value: unknown, label: string): string {
 }
 
 export function optionalString(value: unknown, label: string): string | null {
-  if (value === null) {
+  if (value == null) {
     return null
   }
 

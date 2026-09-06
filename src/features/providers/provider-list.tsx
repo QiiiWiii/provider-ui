@@ -39,10 +39,8 @@ import {
 import { ProviderEditDialog } from '@/features/providers/provider-account-edit'
 import { ProviderCreateDialog } from '@/features/providers/provider-create'
 import { formatProviderKind } from '@/features/providers/provider-format'
-import {
-  ProviderQuotaEstimate,
-  ProviderQuotaSummary,
-} from '@/features/providers/provider-quota'
+import { ProviderQuotaSummary } from '@/features/providers/provider-quota'
+import { ProviderQuotaEstimate } from '@/features/providers/provider-quota-estimate'
 import {
   syncQuotaCache,
 } from '@/features/providers/provider-quota-cache'
@@ -127,7 +125,7 @@ function ProviderAccounts({
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="min-w-48">Quota</TableHead>
-              <TableHead className="min-w-36 pr-4">Estimate</TableHead>
+              <TableHead className="min-w-36">Estimate</TableHead>
               <TableHead className="pr-4 text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -208,7 +206,7 @@ function ProviderTableRow({
       <TableCell>
         <ProviderQuotaSummary accountId={account.id} quota={account.quota} />
       </TableCell>
-      <TableCell className="pr-4">
+      <TableCell>
         <ProviderQuotaEstimate quota={account.quota} />
       </TableCell>
       <TableCell className="pr-4 text-right">

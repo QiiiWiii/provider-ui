@@ -11,6 +11,7 @@ import {
   decodeProviderOAuthSession,
   decodeProviderHealth,
   decodeProviderQuota,
+  decodeProviderQuotaEstimateHistory,
 } from '@/features/providers/provider-decoders'
 import {
   createCompatibleProviderBody,
@@ -29,6 +30,7 @@ import type {
   ProviderOAuthSession,
   ProviderHealthSnapshot,
   ProviderQuota,
+  ProviderQuotaEstimateHistory,
   SetProviderEnabledInput,
   StartProviderOAuthInput,
   UpdateProviderAccountInput,
@@ -79,6 +81,15 @@ export function refreshProviderQuota(accountId: string): Promise<ProviderQuota> 
     `${providerEndpoint(accountId)}/quota/refresh`,
     decodeProviderQuota,
     { method: 'POST' },
+  )
+}
+
+export function getProviderQuotaEstimateHistory(
+  accountId: string,
+): Promise<ProviderQuotaEstimateHistory> {
+  return requestAuthenticatedData(
+    `${providerEndpoint(accountId)}/estimate-history`,
+    decodeProviderQuotaEstimateHistory,
   )
 }
 

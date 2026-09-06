@@ -81,15 +81,6 @@ export type ProviderQuotaBreakdown = {
   used: number
 }
 
-export type ProviderQuotaWindowEstimate = {
-  windowStart: number
-  windowEnd: number
-  observedTokens: number | null
-  estimatedLimitTokens: number | null
-  observedCostUsd: string | null
-  estimatedLimitCostUsd: string | null
-}
-
 export type ProviderQuotaMetric = {
   key: string
   kind: ProviderQuotaMetricKind
@@ -99,7 +90,6 @@ export type ProviderQuotaMetric = {
   limit: number | null
   period: ProviderQuotaPeriod | null
   breakdown: ProviderQuotaBreakdown[]
-  estimate: ProviderQuotaWindowEstimate | null
 }
 
 export type ProviderQuotaGroup = {
@@ -122,6 +112,39 @@ export type ProviderQuota = {
   freshness: ProviderQuotaFreshness | null
   snapshot: ProviderQuotaSnapshot | null
   lastError: ProviderQuotaErrorKind | null
+  estimate: ProviderQuotaEstimate | null
+}
+
+export type ProviderQuotaEstimateCompleteness = 'complete' | 'lower_bound'
+
+export type ProviderQuotaEstimate = {
+  quotaGroupKey: string
+  quotaMetricKey: string
+  periodKind: ProviderQuotaPeriodKind
+  durationSeconds: number | null
+  windowStartMs: number
+  windowEndMs: number
+  observedAtMs: number
+  observedUsedPercent: number
+  observedCostUsd: string
+  estimatedLimitCostUsd: string
+  costCompleteness: ProviderQuotaEstimateCompleteness
+  pricedAttempts: number
+  dispatchedAttempts: number
+}
+
+export type ProviderQuotaEstimateSeries = {
+  groupKey: string
+  metricKey: string
+  periodKind: ProviderQuotaPeriodKind
+  durationSeconds: number | null
+  points: ProviderQuotaEstimate[]
+}
+
+export type ProviderQuotaEstimateHistory = {
+  fromMs: number
+  toMs: number
+  series: ProviderQuotaEstimateSeries[]
 }
 
 export type ProviderAccountWithQuota = ProviderAccount & {

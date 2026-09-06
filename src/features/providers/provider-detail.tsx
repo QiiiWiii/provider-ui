@@ -21,6 +21,7 @@ import {
 import { ProviderHealthCard } from '@/features/providers/provider-health'
 import { ProviderModels } from '@/features/providers/provider-model-catalog'
 import { ProviderQuotaCard } from '@/features/providers/provider-quota'
+import { ProviderQuotaEstimateHistoryCard } from '@/features/providers/provider-quota-estimate-history'
 import { ProviderReauthDialog } from '@/features/providers/provider-reauth-dialog'
 import {
   providerHealthQueryOptions,
@@ -133,6 +134,7 @@ export function ProviderDetail({
       />
       <ProviderHealthCard health={health} />
       <ProviderQuotaCard accountId={accountId} />
+      <ProviderQuotaEstimateHistoryCard accountId={accountId} />
       <ProviderModels
         models={models.data}
         pending={models.isPending}

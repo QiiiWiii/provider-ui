@@ -7,6 +7,7 @@ import {
   getProviderModels,
   getProviderOAuthSession,
   getProviderQuota,
+  getProviderQuotaEstimateHistory,
 } from '@/features/providers/provider-api'
 
 export const providerKeys = {
@@ -15,6 +16,8 @@ export const providerKeys = {
   models: (accountId: string) =>
     ['providers', accountId, 'models'] as const,
   quota: (accountId: string) => ['providers', accountId, 'quota'] as const,
+  estimateHistory: (accountId: string) =>
+    ['providers', accountId, 'estimate-history'] as const,
   health: () => ['providers', 'health'] as const,
   oauthSession: (sessionId: string) =>
     ['provider-oauth-session', sessionId] as const,
@@ -48,6 +51,14 @@ export function providerQuotaQueryOptions(accountId: string) {
     queryFn: () => getProviderQuota(accountId),
     // Mirrors the backend 30s quota freshness window, so the list and the
     // detail page share one upstream fetch within that window.
+    staleTime: 30_000,
+  })
+}
+
+export function providerQuotaEstimateHistoryQueryOptions(accountId: string) {
+  return queryOptions({
+    queryKey: providerKeys.estimateHistory(accountId),
+    queryFn: () => getProviderQuotaEstimateHistory(accountId),
     staleTime: 30_000,
   })
 }
