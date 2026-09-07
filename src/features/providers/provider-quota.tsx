@@ -29,15 +29,15 @@ import {
   percentageRemaining,
   percentageUsed,
 } from '@/features/providers/provider-quota-metrics'
-import {
-  formatQuotaEstimateValue,
-  quotaMetricDisplay,
-} from '@/features/providers/provider-quota-format'
+import { quotaMetricDisplay } from '@/features/providers/provider-quota-format'
 import {
   syncProviderListQuota,
   syncQuotaCache,
 } from '@/features/providers/provider-quota-cache'
-import { providerQuotaQueryOptions } from '@/features/providers/providers-query'
+import {
+  providerKeys,
+  providerQuotaQueryOptions,
+} from '@/features/providers/providers-query'
 import type { ProviderQuota } from '@/features/providers/provider-types'
 
 export function ProviderQuotaSummary({
@@ -141,15 +141,6 @@ export function ProviderQuotaSummary({
   )
 }
 
-export function ProviderQuotaEstimate({ quota }: { quota: ProviderQuota }) {
-  const value = formatQuotaEstimateValue(findPrimaryUsage(quota)?.metric)
-  return (
-    <span className="text-sm tabular-nums text-muted-foreground">
-      {value ?? '—'}
-    </span>
-  )
-}
-
 export function ProviderQuotaCard({ accountId }: { accountId: string }) {
   const quota = useQuery(providerQuotaQueryOptions(accountId))
   const queryClient = useQueryClient()
@@ -159,6 +150,9 @@ export function ProviderQuotaCard({ accountId }: { accountId: string }) {
     onMutate: () => setRefreshAnnouncement('Refreshing quota.'),
     onSuccess: (nextQuota) => {
       syncQuotaCache(queryClient, accountId, nextQuota)
+      void queryClient.invalidateQueries({
+        queryKey: providerKeys.estimateHistory(accountId),
+      })
       setRefreshAnnouncement(
         nextQuota.lastError
           ? 'The latest refresh failed. The last available quota remains visible.'

@@ -2,6 +2,7 @@ import type {
   ProviderQuota,
   ProviderQuotaGroup,
   ProviderQuotaMetric,
+  ProviderQuotaEstimate,
 } from '@/features/providers/provider-types'
 
 const percentFormatter = new Intl.NumberFormat('en', {
@@ -32,6 +33,19 @@ export function findPrimaryBalance(
   )
 
   return group && metric ? { group, metric } : null
+}
+
+export function matchingPrimaryEstimate(
+  quota: ProviderQuota,
+): ProviderQuotaEstimate | null {
+  const primary = findPrimaryUsage(quota)
+  const estimate = quota.estimate
+  return primary &&
+    estimate &&
+    estimate.quotaGroupKey === primary.group.key &&
+    estimate.quotaMetricKey === primary.metric.key
+    ? estimate
+    : null
 }
 
 export function percentageUsed(metric: ProviderQuotaMetric): number | null {
